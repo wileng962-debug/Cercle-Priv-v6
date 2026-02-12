@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dice - Cercle Privé</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Cormorant+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --midnight: #0a1128;
+            --gold: #d4af37;
+            --gold-dim: #8a7425;
+            --white: #f5f5f5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background: var(--midnight);
+            color: var(--white);
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 30%, rgba(212, 175, 55, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--gold-dim);
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--gold);
+            text-decoration: none;
+        }
+
+        .balance {
+            font-size: 1.3rem;
+            color: var(--gold);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .game-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            text-align: center;
+            color: var(--gold);
+            margin-bottom: 2rem;
+        }
+
+        .game-board {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(10, 17, 40, 0.9));
+            border: 3px solid var(--gold);
+            border-radius: 10px;
+            padding: 3rem 2rem;
+        }
+
+        .number-selector {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .number-selector h3 {
+            color: var(--gold);
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .numbers-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .number-btn {
+            padding: 1.5rem;
+            font-size: 1.3rem;
+            border: 2px solid var(--gold-dim);
+            background: rgba(0, 0, 0, 0.4);
+            color: var(--white);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .number-btn:hover {
+            border-color: var(--gold);
+            background: rgba(212, 175, 55, 0.2);
+        }
+
+        .number-btn.selected {
+            background: var(--gold);
+            color: var(--midnight);
+        }
+
+        .dice-display {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            margin: 2rem 0;
+        }
+
+        .dice {
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: #000;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            animation: roll 0.5s ease;
+        }
+
+        @keyframes roll {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(90deg); }
+            50% { transform: rotate(180deg); }
+            75% { transform: rotate(270deg); }
+        }
+
+        .bet-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .bet-input {
+            padding: 0.8rem;
+            width: 150px;
+            font-size: 1.2rem;
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid var(--gold-dim);
+            color: var(--white);
+            text-align: center;
+        }
+
+        .btn {
+            padding: 1rem 3rem;
+            border: 2px solid var(--gold);
+            background: var(--gold);
+            color: var(--midnight);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: transparent;
+            color: var(--gold);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .result {
+            text-align: center;
+            font-size: 2rem;
+            margin-top: 2rem;
+            color: var(--gold);
+            min-height: 3rem;
+        }
+
+        .result.win {
+            color: #4ade80;
+        }
+
+        .result.lose {
+            color: #f87171;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="logo">← Cercle Privé</a>
+            <div class="balance">
+                Saldo: <span id="balance">10,000</span> kr
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 class="game-title">🎯 DICE 🎯</h1>
+
+        <div class="game-board">
+            <div class="number-selector">
+                <h3>Välj Ett Intervall (1-100)</h3>
+                <div class="numbers-grid">
+                    <button class="number-btn" onclick="selectNumber(1)">1-20</button>
+                    <button class="number-btn" onclick="selectNumber(21)">21-40</button>
+                    <button class="number-btn" onclick="selectNumber(41)">41-60</button>
+                    <button class="number-btn" onclick="selectNumber(61)">61-80</button>
+                    <button class="number-btn" onclick="selectNumber(81)">81-100</button>
+                </div>
+                <p style="color: var(--gold); margin-top: 1rem;">
+                    Valt: <span id="selectedRange" style="font-size: 1.5rem; font-weight: 600;">-</span>
+                </p>
+            </div>
+
+            <div class="dice-display" id="diceDisplay">
+                <div style="font-size: 4rem; color: var(--gold);">🎲</div>
+            </div>
+
+            <div>
+                <div class="bet-section">
+                    <label style="color: var(--gold); font-size: 1.2rem;">Insats:</label>
+                    <input type="number" class="bet-input" id="betAmount" value="100" min="10" step="10">
+                </div>
+                
+                <div style="text-align: center;">
+                    <button class="btn" id="rollBtn" onclick="rollDice()">KASTA</button>
+                </div>
+            </div>
+
+            <div class="result" id="result"></div>
+        </div>
+
+        <div style="background: rgba(0,0,0,0.3); padding: 1.5rem; border: 1px solid var(--gold-dim); border-radius: 5px; margin-top: 2rem;">
+            <h3 style="color: var(--gold); margin-bottom: 1rem; text-align: center;">Utbetalning</h3>
+            <p style="text-align: center; font-size: 1.3rem;">
+                Rätt intervall = <span style="color: var(--gold); font-weight: 600;">5x insats</span><br>
+                <span style="opacity: 0.7;">Varje intervall har 20% vinstchans</span>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        let balance = parseInt(localStorage.getItem('balance')) || 10000;
+        let selectedRange = null;
+        let isRolling = false;
+
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            
+            if (type === 'roll') {
+                osc.frequency.value = 300 + Math.random() * 200;
+                osc.type = 'square';
+                gain.gain.setValueAtTime(0.15, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                osc.start();
+                osc.stop(audioContext.currentTime + 0.1);
+            } else if (type === 'win') {
+                for (let i = 0; i < 3; i++) {
+                    const o = audioContext.createOscillator();
+                    const g = audioContext.createGain();
+                    o.connect(g);
+                    g.connect(audioContext.destination);
+                    o.frequency.value = 800 + (i * 200);
+                    g.gain.setValueAtTime(0.2, audioContext.currentTime + (i * 0.1));
+                    g.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + (i * 0.1) + 0.3);
+                    o.start(audioContext.currentTime + (i * 0.1));
+                    o.stop(audioContext.currentTime + (i * 0.1) + 0.3);
+                }
+            } else if (type === 'lose') {
+                osc.frequency.value = 200;
+                osc.type = 'sawtooth';
+                gain.gain.setValueAtTime(0.2, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                osc.start();
+                osc.stop(audioContext.currentTime + 0.3);
+            }
+        }
+
+        document.getElementById('balance').textContent = balance.toLocaleString();
+
+        function updateBalance(amount) {
+            balance = amount;
+            document.getElementById('balance').textContent = balance.toLocaleString();
+            localStorage.setItem('balance', balance);
+        }
+
+        function selectNumber(start) {
+            selectedRange = start;
+            
+            document.querySelectorAll('.number-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+            
+            const end = start + 19;
+            document.getElementById('selectedRange').textContent = `${start}-${end}`;
+        }
+
+        async function rollDice() {
+            if (isRolling) return;
+            
+            if (selectedRange === null) {
+                alert('Välj ett intervall först!');
+                return;
+            }
+            
+            const bet = parseInt(document.getElementById('betAmount').value);
+            if (bet > balance || bet < 10) {
+                alert('Ogiltig insats!');
+                return;
+            }
+
+            isRolling = true;
+            document.getElementById('rollBtn').disabled = true;
+            document.getElementById('result').textContent = '';
+            updateBalance(balance - bet);
+
+            const diceDisplay = document.getElementById('diceDisplay');
+            diceDisplay.innerHTML = '<div class="dice">?</div>';
+            
+            for (let i = 0; i < 5; i++) {
+                await new Promise(resolve => setTimeout(resolve, 200));
+                const randomNum = Math.floor(Math.random() * 100) + 1;
+                playSound('roll');
+                diceDisplay.innerHTML = `<div class="dice">${randomNum}</div>`;
+            }
+
+            const finalRoll = Math.floor(Math.random() * 100) + 1;
+            diceDisplay.innerHTML = `<div class="dice">${finalRoll}</div>`;
+
+            const end = selectedRange + 19;
+            const won = finalRoll >= selectedRange && finalRoll <= end;
+
+            const resultEl = document.getElementById('result');
+            
+            if (won) {
+                const winAmount = bet * 5;
+                updateBalance(balance + winAmount);
+                resultEl.textContent = `🎉 ${finalRoll}! Vann ${winAmount.toLocaleString()} kr!`;
+                resultEl.className = 'result win';
+                playSound('win');
+            } else {
+                resultEl.textContent = `${finalRoll} - Inte i ditt intervall`;
+                resultEl.className = 'result lose';
+                playSound('lose');
+            }
+
+            isRolling = false;
+            document.getElementById('rollBtn').disabled = false;
+        }
+    </script>
+</body>
+</html>

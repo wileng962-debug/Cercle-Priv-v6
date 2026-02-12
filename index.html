@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cercle Privé - Exklusivt Spelklubb</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Cormorant+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --midnight: #0a1128;
+            --gold: #d4af37;
+            --black: #000000;
+            --gold-dim: #8a7425;
+            --white: #f5f5f5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background: var(--midnight);
+            color: var(--white);
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(212, 175, 55, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(212, 175, 55, 0.02) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--gold-dim);
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 10;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gold);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .balance {
+            font-size: 1.2rem;
+            color: var(--gold);
+        }
+
+        .balance-amount {
+            font-weight: 600;
+            font-size: 1.5rem;
+        }
+
+        .btn {
+            padding: 0.7rem 1.5rem;
+            border: 2px solid var(--gold);
+            background: transparent;
+            color: var(--gold);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            background: var(--gold);
+            color: var(--midnight);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .btn-primary {
+            background: var(--gold);
+            color: var(--midnight);
+        }
+
+        .btn-primary:hover {
+            background: transparent;
+            color: var(--gold);
+        }
+
+        .btn-concierge {
+            background: transparent;
+            color: var(--gold);
+        }
+
+        .btn-concierge:hover {
+            background: var(--gold);
+            color: var(--midnight);
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 5rem 0 3rem;
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 1rem;
+            letter-spacing: 3px;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .hero p {
+            font-size: 1.4rem;
+            color: var(--white);
+            opacity: 0.8;
+            letter-spacing: 2px;
+        }
+
+        .games-section {
+            padding: 3rem 0;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: var(--gold);
+            letter-spacing: 2px;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .game-card {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(10, 17, 40, 0.8));
+            border: 1px solid var(--gold-dim);
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .game-card:hover::before {
+            opacity: 1;
+        }
+
+        .game-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--gold);
+            box-shadow: 0 10px 40px rgba(212, 175, 55, 0.2);
+        }
+
+        .game-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.3));
+        }
+
+        .game-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: var(--gold);
+            margin-bottom: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        .game-card p {
+            font-size: 1rem;
+            opacity: 0.8;
+            margin-bottom: 1.3rem;
+            line-height: 1.5;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, var(--midnight), #1a2347);
+            border: 2px solid var(--gold);
+            padding: 3rem;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 2rem;
+            color: var(--gold);
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        .modal h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--gold);
+            margin-bottom: 2rem;
+        }
+
+        .modal input {
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--gold-dim);
+            color: var(--white);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 3rem 0;
+            border-top: 1px solid var(--gold-dim);
+            margin-top: 4rem;
+            opacity: 0.7;
+        }
+
+        .disclaimer {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--gold-dim);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        @media (max-width: 1200px) {
+            .games-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .games-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header-content {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .header-right {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">Cercle Privé</div>
+            <div class="header-right">
+                <div class="balance">
+                    Saldo: <span class="balance-amount" id="balance">10,000</span> kr
+                </div>
+                <button class="btn btn-concierge" onclick="window.location.href='chatbot.html'">💬 Concierge</button>
+                <button class="btn" onclick="showBank()">Bank</button>
+                <button class="btn" id="authBtn" onclick="showLogin()">Logga in</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <section class="hero">
+            <h1>CERCLE PRIVÉ</h1>
+            <p>En exklusiv spelupplevelse</p>
+        </section>
+
+        <section class="games-section">
+            <h2 class="section-title">Våra Spel</h2>
+            <div class="games-grid">
+                <div class="game-card" onclick="window.location.href='slots.html'">
+                    <div class="game-icon">🎰</div>
+                    <h3>Slots</h3>
+                    <p>Klassiska enarmade banditer</p>
+                    <button class="btn btn-primary">Spela Nu</button>
+                </div>
+
+                <div class="game-card" onclick="window.location.href='roulette.html'">
+                    <div class="game-icon">🎡</div>
+                    <h3>Roulette</h3>
+                    <p>Europeisk roulette</p>
+                    <button class="btn btn-primary">Spela Nu</button>
+                </div>
+
+                <div class="game-card" onclick="window.location.href='blackjack.html'">
+                    <div class="game-icon">🃏</div>
+                    <h3>Blackjack</h3>
+                    <p>Klassiskt kortspel</p>
+                    <button class="btn btn-primary">Spela Nu</button>
+                </div>
+
+                <div class="game-card" onclick="window.location.href='poker.html'">
+                    <div class="game-icon">♠️</div>
+                    <h3>Poker</h3>
+                    <p>Video Poker</p>
+                    <button class="btn btn-primary">Spela Nu</button>
+                </div>
+
+                <div class="game-card" onclick="window.location.href='craps.html'">
+                    <div class="game-icon">🎲</div>
+                    <h3>Craps</h3>
+                    <p>Spännande tärningsspel</p>
+                    <button class="btn btn-primary">Spela Nu</button>
+                </div>
+
+                <div class="game-card" onclick="window.location.href='plinko.html'">
+                    <div class="game-icon">🏴‍☠️</div>
+                    <h3>Plinko</h3>
+                    <p>Släpp bollen till vinst</p>
+                    <button class="btn btn-primary">Spela Nu</button>
+                </div>
+
+                <div class="game-card" onclick="window.location.href='crash.html'">
+                    <div class="game-icon">✈️</div>
+                    <h3>Crash</h3>
+                    <p>Tryck ut innan krasch</p>
+                    <button class="btn btn-primary">Spela Nu</button>
+                </div>
+
+                <div class="game-card" onclick="window.location.href='dice.html'">
+                    <div class="game-icon">🎯</div>
+                    <h3>Dice</h3>
+                    <p>Gissa rätt nummer</p>
+                    <button class="btn btn-primary">Spela Nu</button>
+                </div>
+            </div>
+        </section>
+
+        <div class="disclaimer">
+            <strong>⚠️ ENDAST UNDERHÅLLNING - INGA RIKTIGA PENGAR</strong><br>
+            Detta är ett skolprojekt. Alla pengar är virtuella.
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2024 Cercle Privé - Ett skolprojekt om AI-assisterad webbutveckling</p>
+    </footer>
+
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('loginModal')">×</button>
+            <h2>Välkommen</h2>
+            <input type="text" id="username" placeholder="Användarnamn">
+            <input type="password" id="password" placeholder="Lösenord">
+            <button class="btn btn-primary" onclick="login()" style="width: 100%; margin-top: 1rem;">Logga in</button>
+            <p style="margin-top: 1rem; opacity: 0.7;">Skapa konto genom att logga in!</p>
+        </div>
+    </div>
+
+    <div class="modal" id="bankModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('bankModal')">×</button>
+            <h2>Banken</h2>
+            <p style="margin-bottom: 2rem;">Köp fler chips</p>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+                <button class="btn btn-primary" onclick="buyChips(1000)">1,000 kr</button>
+                <button class="btn btn-primary" onclick="buyChips(5000)">5,000 kr</button>
+                <button class="btn btn-primary" onclick="buyChips(10000)">10,000 kr</button>
+                <button class="btn btn-primary" onclick="buyChips(50000)">50,000 kr</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let balance = parseInt(localStorage.getItem('balance')) || 10000;
+        let currentUser = localStorage.getItem('currentUser') || null;
+
+        function updateBalance(amount) {
+            balance = amount;
+            document.getElementById('balance').textContent = balance.toLocaleString();
+            localStorage.setItem('balance', balance);
+        }
+
+        updateBalance(balance);
+
+        if (currentUser) {
+            document.getElementById('authBtn').textContent = currentUser;
+            document.getElementById('authBtn').onclick = logout;
+        }
+
+        function showLogin() {
+            document.getElementById('loginModal').classList.add('active');
+        }
+
+        function showBank() {
+            document.getElementById('bankModal').classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username && password) {
+                currentUser = username;
+                localStorage.setItem('currentUser', username);
+                document.getElementById('authBtn').textContent = username;
+                document.getElementById('authBtn').onclick = logout;
+                closeModal('loginModal');
+                
+                const savedBalance = localStorage.getItem(`balance_${username}`);
+                if (savedBalance) {
+                    updateBalance(parseInt(savedBalance));
+                } else {
+                    updateBalance(10000);
+                    localStorage.setItem(`balance_${username}`, balance);
+                }
+            }
+        }
+
+        function logout() {
+            if (currentUser) {
+                localStorage.setItem(`balance_${currentUser}`, balance);
+            }
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            document.getElementById('authBtn').textContent = 'Logga in';
+            document.getElementById('authBtn').onclick = showLogin;
+            updateBalance(10000);
+        }
+
+        function buyChips(amount) {
+            balance += amount;
+            updateBalance(balance);
+            if (currentUser) {
+                localStorage.setItem(`balance_${currentUser}`, balance);
+            }
+            closeModal('bankModal');
+        }
+
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+            }
+        }
+    </script>
+</body>
+</html>

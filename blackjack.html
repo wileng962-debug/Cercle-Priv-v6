@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blackjack - Cercle Privé</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Cormorant+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --midnight: #0a1128;
+            --gold: #d4af37;
+            --black: #000000;
+            --gold-dim: #8a7425;
+            --white: #f5f5f5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background: var(--midnight);
+            color: var(--white);
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(212, 175, 55, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(212, 175, 55, 0.02) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--gold-dim);
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 10;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--gold);
+            letter-spacing: 2px;
+            text-decoration: none;
+        }
+
+        .balance {
+            font-size: 1.3rem;
+            color: var(--gold);
+        }
+
+        .balance-amount {
+            font-weight: 600;
+            font-size: 1.6rem;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .game-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            text-align: center;
+            color: var(--gold);
+            margin-bottom: 2rem;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .table {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(10, 17, 40, 0.9));
+            border: 3px solid var(--gold);
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .hand {
+            margin-bottom: 3rem;
+        }
+
+        .hand-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: var(--gold);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .cards {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            min-height: 140px;
+            align-items: center;
+        }
+
+        .card {
+            width: 80px;
+            height: 120px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #000;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            position: relative;
+            animation: dealCard 0.3s ease;
+        }
+
+        @keyframes dealCard {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) rotate(-10deg);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) rotate(0);
+            }
+        }
+
+        .card.red {
+            color: #c41e3a;
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, var(--midnight), #1a2347);
+            color: var(--gold);
+            font-size: 3rem;
+        }
+
+        .card-value {
+            font-size: 1rem;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+        }
+
+        .score {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-top: 1rem;
+            color: var(--gold);
+        }
+
+        .controls {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .bet-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .bet-label {
+            font-size: 1.3rem;
+            color: var(--gold);
+        }
+
+        .bet-input {
+            padding: 0.8rem;
+            font-size: 1.2rem;
+            width: 150px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid var(--gold-dim);
+            color: var(--white);
+            font-family: 'Cormorant Garamond', serif;
+            text-align: center;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2.5rem;
+            border: 2px solid var(--gold);
+            background: transparent;
+            color: var(--gold);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: var(--gold);
+            color: var(--midnight);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: var(--gold);
+            color: var(--midnight);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: transparent;
+            color: var(--gold);
+        }
+
+        .result-message {
+            text-align: center;
+            font-size: 2rem;
+            margin-top: 2rem;
+            min-height: 3rem;
+            font-family: 'Playfair Display', serif;
+            color: var(--gold);
+        }
+
+        .result-message.win {
+            color: #4ade80;
+            text-shadow: 0 0 20px rgba(74, 222, 128, 0.5);
+        }
+
+        .result-message.lose {
+            color: #f87171;
+        }
+
+        @media (max-width: 768px) {
+            .game-title {
+                font-size: 2rem;
+            }
+
+            .card {
+                width: 60px;
+                height: 90px;
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="logo">← Cercle Privé</a>
+            <div class="balance">
+                Saldo: <span class="balance-amount" id="balance">10,000</span> kr
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 class="game-title">🃏 BLACKJACK 🃏</h1>
+
+        <div class="table">
+            <div class="hand">
+                <h2 class="hand-title">Dealer</h2>
+                <div class="cards" id="dealerCards"></div>
+                <div class="score" id="dealerScore"></div>
+            </div>
+
+            <div class="hand">
+                <h2 class="hand-title">Du</h2>
+                <div class="cards" id="playerCards"></div>
+                <div class="score" id="playerScore"></div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="bet-section" id="betSection">
+                <span class="bet-label">Insats:</span>
+                <input type="number" class="bet-input" id="betInput" value="100" min="10" step="10">
+                <button class="btn btn-primary" onclick="startGame()">DELA UT</button>
+            </div>
+
+            <div class="action-buttons" id="actionButtons" style="display: none;">
+                <button class="btn" onclick="hit()">KORT</button>
+                <button class="btn" onclick="stand()">STANNA</button>
+                <button class="btn" onclick="doubleDown()">DUBBLA</button>
+            </div>
+
+            <div class="result-message" id="resultMessage"></div>
+        </div>
+    </div>
+
+    <script>
+        const suits = ['♠', '♥', '♦', '♣'];
+        const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+        
+        let balance = parseInt(localStorage.getItem('balance')) || 10000;
+        let deck = [];
+        let playerHand = [];
+        let dealerHand = [];
+        let bet = 0;
+        let gameActive = false;
+
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            
+            if (type === 'deal') {
+                osc.frequency.value = 350;
+                gain.gain.setValueAtTime(0.15, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.08);
+                osc.start();
+                osc.stop(audioContext.currentTime + 0.08);
+            } else if (type === 'win') {
+                for (let i = 0; i < 4; i++) {
+                    const o = audioContext.createOscillator();
+                    const g = audioContext.createGain();
+                    o.connect(g);
+                    g.connect(audioContext.destination);
+                    o.frequency.value = 700 + (i * 150);
+                    g.gain.setValueAtTime(0.2, audioContext.currentTime + (i * 0.1));
+                    g.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + (i * 0.1) + 0.3);
+                    o.start(audioContext.currentTime + (i * 0.1));
+                    o.stop(audioContext.currentTime + (i * 0.1) + 0.3);
+                }
+            } else if (type === 'lose') {
+                osc.frequency.value = 200;
+                osc.type = 'sawtooth';
+                gain.gain.setValueAtTime(0.2, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+                osc.start();
+                osc.stop(audioContext.currentTime + 0.4);
+            }
+        }
+        let dealerHidden = true;
+
+        function updateBalance(amount) {
+            balance = amount;
+            document.getElementById('balance').textContent = balance.toLocaleString();
+            localStorage.setItem('balance', balance);
+        }
+
+        updateBalance(balance);
+
+        function createDeck() {
+            deck = [];
+            for (let suit of suits) {
+                for (let value of values) {
+                    deck.push({ suit, value });
+                }
+            }
+            // Shuffle
+            for (let i = deck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]];
+            }
+        }
+
+        function getCardValue(card) {
+            if (card.value === 'A') return 11;
+            if (['J', 'Q', 'K'].includes(card.value)) return 10;
+            return parseInt(card.value);
+        }
+
+        function calculateScore(hand) {
+            let score = 0;
+            let aces = 0;
+
+            for (let card of hand) {
+                score += getCardValue(card);
+                if (card.value === 'A') aces++;
+            }
+
+            while (score > 21 && aces > 0) {
+                score -= 10;
+                aces--;
+            }
+
+            return score;
+        }
+
+        function renderCard(card, hidden = false) {
+            if (hidden) {
+                return `<div class="card card-back">🎴</div>`;
+            }
+            const isRed = card.suit === '♥' || card.suit === '♦';
+            return `<div class="card ${isRed ? 'red' : ''}">
+                <span class="card-value">${card.value}</span>
+                ${card.suit}<br>${card.value}
+            </div>`;
+        }
+
+        function renderHands() {
+            const dealerCardsEl = document.getElementById('dealerCards');
+            const playerCardsEl = document.getElementById('playerCards');
+
+            dealerCardsEl.innerHTML = dealerHand.map((card, i) => 
+                renderCard(card, dealerHidden && i === 1)
+            ).join('');
+
+            playerCardsEl.innerHTML = playerHand.map(card => renderCard(card)).join('');
+
+            const playerScore = calculateScore(playerHand);
+            document.getElementById('playerScore').textContent = `Poäng: ${playerScore}`;
+
+            if (!dealerHidden) {
+                const dealerScore = calculateScore(dealerHand);
+                document.getElementById('dealerScore').textContent = `Poäng: ${dealerScore}`;
+            } else {
+                document.getElementById('dealerScore').textContent = '';
+            }
+        }
+
+        function startGame() {
+            const betInput = parseInt(document.getElementById('betInput').value);
+            
+            if (betInput < 10 || betInput > balance) {
+                alert('Ogiltig insats!');
+                return;
+            }
+
+            bet = betInput;
+            updateBalance(balance - bet);
+
+            createDeck();
+            playerHand = [deck.pop(), deck.pop()];
+            dealerHand = [deck.pop(), deck.pop()];
+            gameActive = true;
+            dealerHidden = true;
+
+            document.getElementById('betSection').style.display = 'none';
+            document.getElementById('actionButtons').style.display = 'flex';
+            document.getElementById('resultMessage').textContent = '';
+
+            renderHands();
+
+            // Check for blackjack
+            if (calculateScore(playerHand) === 21) {
+                stand();
+            }
+        }
+
+        function hit() {
+            if (!gameActive) return;
+
+            playerHand.push(deck.pop());
+            renderHands();
+
+            const score = calculateScore(playerHand);
+            if (score > 21) {
+                endGame('lose', 'BUST! Du förlorade.');
+            } else if (score === 21) {
+                stand();
+            }
+        }
+
+        function stand() {
+            if (!gameActive) return;
+
+            dealerHidden = false;
+            gameActive = false;
+
+            // Dealer draws until 17
+            while (calculateScore(dealerHand) < 17) {
+                dealerHand.push(deck.pop());
+            }
+
+            renderHands();
+
+            const playerScore = calculateScore(playerHand);
+            const dealerScore = calculateScore(dealerHand);
+
+            if (dealerScore > 21) {
+                endGame('win', `Dealern fick BUST! Du vann ${bet * 2} kr`);
+            } else if (playerScore > dealerScore) {
+                endGame('win', `Du vann ${bet * 2} kr!`);
+            } else if (playerScore < dealerScore) {
+                endGame('lose', 'Dealern vann.');
+            } else {
+                endGame('tie', `Oavgjort! ${bet} kr returneras.`);
+            }
+        }
+
+        function doubleDown() {
+            if (!gameActive || balance < bet) return;
+
+            updateBalance(balance - bet);
+            bet *= 2;
+
+            playerHand.push(deck.pop());
+            renderHands();
+
+            const score = calculateScore(playerHand);
+            if (score > 21) {
+                endGame('lose', 'BUST! Du förlorade.');
+            } else {
+                stand();
+            }
+        }
+
+        function endGame(result, message) {
+            gameActive = false;
+            const resultEl = document.getElementById('resultMessage');
+            resultEl.textContent = message;
+            resultEl.className = 'result-message ' + result;
+
+            if (result === 'win') {
+                updateBalance(balance + bet * 2);
+            } else if (result === 'tie') {
+                updateBalance(balance + bet);
+            }
+
+            document.getElementById('actionButtons').style.display = 'none';
+            document.getElementById('betSection').style.display = 'flex';
+        }
+    </script>
+</body>
+</html>

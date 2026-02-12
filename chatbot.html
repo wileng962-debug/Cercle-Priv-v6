@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Concierge - Cercle Privé</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Cormorant+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --midnight: #0a1128;
+            --gold: #d4af37;
+            --gold-dim: #8a7425;
+            --white: #f5f5f5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background: var(--midnight);
+            color: var(--white);
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 30%, rgba(212, 175, 55, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--gold-dim);
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--gold);
+            text-decoration: none;
+        }
+
+        .balance {
+            font-size: 1.3rem;
+            color: var(--gold);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .game-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            text-align: center;
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            opacity: 0.8;
+            margin-bottom: 2rem;
+        }
+
+        .chat-container {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(10, 17, 40, 0.9));
+            border: 3px solid var(--gold);
+            border-radius: 10px;
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .message {
+            margin-bottom: 1.5rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            text-align: right;
+        }
+
+        .message-content {
+            display: inline-block;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            max-width: 80%;
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+
+        .message.bot .message-content {
+            background: rgba(212, 175, 55, 0.2);
+            border: 1px solid var(--gold-dim);
+        }
+
+        .message.user .message-content {
+            background: rgba(212, 175, 55, 0.4);
+            border: 1px solid var(--gold);
+        }
+
+        .message-sender {
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+            opacity: 0.7;
+        }
+
+        .chat-input-area {
+            padding: 1.5rem;
+            border-top: 1px solid var(--gold-dim);
+            display: flex;
+            gap: 1rem;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid var(--gold-dim);
+            color: var(--white);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            border-radius: 5px;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+
+        .send-btn {
+            padding: 1rem 2rem;
+            border: 2px solid var(--gold);
+            background: var(--gold);
+            color: var(--midnight);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            border-radius: 5px;
+        }
+
+        .send-btn:hover {
+            background: transparent;
+            color: var(--gold);
+        }
+
+        .quick-questions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .quick-btn {
+            padding: 1rem;
+            border: 2px solid var(--gold-dim);
+            background: rgba(0, 0, 0, 0.4);
+            color: var(--white);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 5px;
+        }
+
+        .quick-btn:hover {
+            border-color: var(--gold);
+            background: rgba(212, 175, 55, 0.2);
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 0.5rem 1rem;
+            background: rgba(212, 175, 55, 0.2);
+            border: 1px solid var(--gold-dim);
+            border-radius: 10px;
+            width: fit-content;
+        }
+
+        .typing-indicator.active {
+            display: inline-block;
+        }
+
+        .typing-indicator span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--gold);
+            border-radius: 50%;
+            margin: 0 2px;
+            animation: bounce 1.4s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes bounce {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-10px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="logo">← Cercle Privé</a>
+            <div class="balance">
+                Saldo: <span id="balance">10,000</span> kr
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 class="game-title">💬 CONCIERGE 💬</h1>
+        <p class="subtitle">Din personliga assistent på Cercle Privé</p>
+
+        <div class="chat-container">
+            <div class="chat-messages" id="chatMessages">
+                <div class="message bot">
+                    <div class="message-sender">Concierge</div>
+                    <div class="message-content">Välkommen till Cercle Privé! Jag är din personliga concierge och kan hjälpa dig med:
+
+📚 Detaljerade spelregler
+💡 Strategier och tips
+💰 Saldo och bankfrågor
+🎯 Rekommendationer för spel
+🎲 Allt om Blackjack, Roulette, Slots, Poker och Craps
+
+Vad vill du veta?</div>
+                </div>
+            </div>
+
+            <div class="chat-input-area">
+                <input type="text" class="chat-input" id="chatInput" placeholder="Skriv ditt meddelande..." onkeypress="handleKeyPress(event)">
+                <button class="send-btn" onclick="sendMessage()">Skicka</button>
+            </div>
+        </div>
+
+        <div class="quick-questions">
+            <button class="quick-btn" onclick="askQuestion('Vilka spel finns?')">Vilka spel finns?</button>
+            <button class="quick-btn" onclick="askQuestion('Hur spelar man blackjack?')">Blackjack-regler</button>
+            <button class="quick-btn" onclick="askQuestion('blackjack strategi')">Blackjack-strategi</button>
+            <button class="quick-btn" onclick="askQuestion('roulette tips')">Roulette-tips</button>
+            <button class="quick-btn" onclick="askQuestion('slots jackpot')">Slots jackpot</button>
+            <button class="quick-btn" onclick="askQuestion('poker händer')">Poker-händer</button>
+        </div>
+    </div>
+
+    <script>
+        let balance = parseInt(localStorage.getItem('balance')) || 10000;
+        document.getElementById('balance').textContent = balance.toLocaleString();
+
+        const responses = {
+            // Hälsningar
+            'hej': 'Hej och välkommen till Cercle Privé! Jag är din personliga concierge. Hur kan jag hjälpa dig idag? Jag kan berätta om våra spel, förklara regler, visa ditt saldo och ge tips!',
+            'hallå': 'Hallå! Välkommen! Vad kan jag hjälpa dig med?',
+            'god morgon': 'God morgon! Redo för en dag av spänning på Cercle Privé?',
+            'god kväll': 'God kväll! Perfekt tid för lite spänning. Vilket spel lockar?',
+            'tjena': 'Tjena! Vad kan jag göra för dig?',
+            
+            // Spel - Allmänt
+            'vilka spel': 'Vi erbjuder åtta fantastiska spel:\n\n🎰 SLOTS - Enarmade banditer\n🎡 ROULETTE - Europeisk roulette\n🃏 BLACKJACK - Kortspel mot dealer\n♠️ POKER - Video Poker\n🎲 CRAPS - Tärningsspel\n🏴‍☠️ PLINKO - Boll studsar\n✈️ CRASH - Planet flyger\n🎯 DICE - Gissa nummer\n\nVilket vill du veta mer om?',
+            'spel': 'Vi har 8 spel: Slots, Roulette, Blackjack, Poker, Craps, Plinko, Crash och Dice. Alla spelas med virtuella kronor. Vilket intresserar dig mest?',
+            'bästa spel': 'Det beror på vad du gillar!\n\n• SLOTS - Enklast för nybörjare\n• BLACKJACK - Bäst odds, kräver strategi\n• ROULETTE - Elegant och visuellt\n• POKER - För pokerhands-älskare\n• CRAPS - Snabbt och spännande\n\nVill du att jag förklarar något spel närmare?',
+            'vilket spel': 'Bra fråga! För nybörjare rekommenderar jag Slots eller Roulette - enkla och roliga. För mer utmaning, testa Blackjack eller Poker. Vill du veta mer om något specifikt spel?',
+            'lätt spel': 'De enklaste spelen är Slots och Roulette. Slots kräver bara att du väljer insats och trycker på snurra. Roulette är också enkelt - satsa på röd/svart eller jämn/udda för 50% vinstchans!',
+            
+            // Blackjack
+            'blackjack': 'BLACKJACK - Det Klassiska Kortspelet:\n\nMÅL: Få 21 poäng eller närmare än dealern utan att gå över.\n\nKORTVÄRDEN:\n• Ess = 1 eller 11 poäng\n• Klädda kort (J, Q, K) = 10 poäng\n• Övriga kort = sitt nummer\n\nVAL:\n• KORT - Ta ett kort till\n• STANNA - Nöjd med handen\n• DUBBLA - Dubbla insatsen, ta ett kort, sen stanna\n\nTIPS: Stanna på 17+, dealern måste dra till 17. Blackjack (21 på första två korten) ger omedelbar vinst!',
+            'hur spelar man blackjack': 'Blackjack är enkelt! Du får 2 kort, dealern får 2 (ett dolt). Klicka "KORT" för fler kort eller "STANNA" när du är nöjd. Målet är att komma närmare 21 än dealern utan att gå över. Dealern måste dra kort till minst 17 poäng.',
+            'blackjack strategi': 'GRUNDSTRATEGI:\n\n• Stanna på 17 eller högre\n• Ta kort på 11 eller lägre\n• På 12-16: Ta kort om dealern visar 7+, annars stanna\n• Dubbla på 10-11 om dealern visar lågt kort\n• Ess är värdefulla - de räknas som 1 eller 11!',
+            'blackjack tips': 'TIPS FÖR BLACKJACK:\n\n1. Lär dig grundstrategin\n2. Dealern måste följa regler (dra till 17)\n3. Statistiskt har dealern fördel vid 12-16\n4. Dubbla när du har fördel (10-11 poäng)\n5. Ess + 10/klädda kort = Blackjack = direkt vinst!',
+            
+            // Roulette
+            'roulette': 'ROULETTE - Den Eleganta Klassikern:\n\nSPELBORD: Europeisk roulette med nummer 0-36\n\nINSATSTYPER:\n• RÖD/SVART - 50% vinstchans, betalar 2:1\n• JÄMN/UDDA - 50% vinstchans, betalar 2:1\n• 1-18 / 19-36 - Låg/Hög, betalar 2:1\n• GRÖN (0) - Sällsynt, betalar 36:1\n• SPECIFIKT NUMMER - Svårt, betalar 36:1\n\nTIPS: Börja med röd/svart eller jämn/udda för säkrare vinster!',
+            'hur spelar man roulette': 'Välj först dina marker (10-1000 kr). Klicka sedan på vad du vill satsa på - röd, svart, jämn, udda, eller specifika nummer. Tryck "SNURRA HJULET" och se var bollen landar! Enklast är att satsa på röd/svart för 50% vinstchans.',
+            'roulette strategi': 'STRATEGI:\n\n• Nybörjare: Satsa på röd/svart eller jämn/udda (bäst odds)\n• Mellannivå: Kombinera flera insatser (röd + specifikt nummer)\n• Avancerat: Satsa på grupper (1-12, 13-24, 25-36)\n\nKom ihåg: Alla insatser är oberoende - tidigare snurr påverkar inte nästa!',
+            'roulette tips': 'ROULETTE TIPS:\n\n• Bäst odds: Röd/Svart eller Jämn/Udda (nästan 50/50)\n• Högst vinst: Enstaka nummer (36:1)\n• Grön (0) ger också 36:1 men är sällsynt\n• Kombinera insatser för mer spänning!\n• Ingen strategi garanterar vinst - ha kul!',
+            'roulette odds': 'UTBETALNINGAR:\n\n• Röd/Svart: 2:1 (dubblerar insatsen)\n• Jämn/Udda: 2:1\n• 1-18 eller 19-36: 2:1\n• Grön (0): 36:1\n• Specifikt nummer: 36:1\n\nBäst chans att vinna: Röd/Svart eller Jämn/Udda!',
+            
+            // Slots
+            'slots': 'SLOTS - Enarmade Banditer:\n\nSÅ SPELAR DU:\n1. Välj insats (10-10,000 kr)\n2. Tryck "SNURRA"\n3. Tre lika symboler = VINST!\n\nSYMBOLER & UTBETALNINGAR:\n💎💎💎 = 50x insatsen (JACKPOT!)\n⭐⭐⭐ = 25x insatsen\n🍀🍀🍀 = 15x insatsen\n🍒🍒🍒 = 10x insatsen\n🍋🍋🍋 = 8x insatsen\n🍊🍊🍊 = 5x insatsen\nTvå lika = 2x insatsen\n\nTIPS: Högre insats = högre potentiell vinst!',
+            'hur spelar man slots': 'Slots är det enklaste spelet! Välj din insats med +/- knapparna, tryck "SNURRA" och hoppas på att tre lika symboler dyker upp. Diamanter är bäst (50x insats), två lika ger också vinst (2x insats).',
+            'slots tips': 'SLOTS TIPS:\n\n• Börja med låg insats för att lära känna spelet\n• Tre diamanter är jackpotten (50x)\n• Även två lika symboler ger vinst (2x)\n• Högre insats = högre vinster, men också högre risk\n• Spela för skojs skull - slots är rent lyckobaserat!',
+            'slots jackpot': 'JACKPOTTEN i Slots är tre diamanter 💎💎💎 som ger 50x din insats!\n\nExempel:\n• Satsar 100 kr → Vinner 5,000 kr\n• Satsar 1,000 kr → Vinner 50,000 kr\n• Satsar 10,000 kr → Vinner 500,000 kr\n\nStjärnor ⭐⭐⭐ ger 25x och är näst bäst. Lycka till!',
+            
+            // Poker
+            'poker': 'VIDEO POKER - Jacks or Better:\n\nSÅ SPELAR DU:\n1. Välj insats och tryck "DELA UT"\n2. Få 5 kort\n3. Klicka på kort du vill BEHÅLLA\n4. Tryck "DRA KORT" för nya kort\n5. Vinst om du får par med Knekt eller bättre\n\nHANDRANKNING (bäst till sämst):\n👑 Royal Flush (800x)\n🔥 Straight Flush (50x)\n4️⃣ Four of a Kind (25x)\n🏠 Full House (9x)\n💧 Flush (6x)\n➡️ Straight (4x)\n3️⃣ Three of a Kind (3x)\n2️⃣2️⃣ Two Pair (2x)\n🃏🃏 Jacks or Better (1x)',
+            'hur spelar man poker': 'Video Poker: Få 5 kort, klicka på de du vill behålla (de lyser upp), tryck DRA KORT för att byta resten. Målet är att få par med Knekt eller bättre. Ju bättre hand, desto mer vinner du!',
+            'poker strategi': 'POKER STRATEGI:\n\n• Behåll alltid par av Knekt eller högre\n• Behåll 4 kort till flush/straight\n• Kasta alla kort om du har skräp\n• Behåll höga kort (J, Q, K, A)\n• Royal Flush är drömen men sällan - sikta på par/two pair',
+            'poker händer': 'POKERHÄNDER (bäst först):\n\n1. Royal Flush - 10, J, Q, K, A samma färg\n2. Straight Flush - 5 i rad samma färg\n3. Four of a Kind - 4 lika kort\n4. Full House - 3 lika + par\n5. Flush - 5 kort samma färg\n6. Straight - 5 kort i rad\n7. Three of a Kind - 3 lika\n8. Two Pair - 2 olika par\n9. Jacks or Better - Par med J, Q, K eller A',
+            
+            // Craps
+            // Craps
+            'craps': 'CRAPS - Tärningsspelet:\n\nINSATSTYPER:\n• PASS LINE - Vinn på 7 eller 11 första kastet (2:1)\n• DON\'T PASS - Vinn på 2 eller 3 första kastet (2:1)\n• FIELD - Vinn på 2,3,4,9,10,11,12 (1:1, 2x på 2 och 12)\n• ANY 7 - Vinn om nästa kast blir 7 (4:1)\n\nSÅ SPELAR DU:\n1. Välj insats och typ\n2. Tryck "KASTA TÄRNINGAR"\n3. Se resultatet!\n\nTIPS: Pass Line är enklast för nybörjare!',
+            'hur spelar man craps': 'Välj en insatstyp (Pass Line är enklast), välj insats och tryck KASTA TÄRNINGAR. Pass Line vinner på 7 eller 11, förlorar på 2, 3 eller 12. Andra nummer sätter ett "point" som du försöker träffa igen.',
+            'craps strategi': 'CRAPS STRATEGI:\n\n• Nybörjare: Pass Line (7 eller 11 på första kast)\n• Field Bet: Vinner på många nummer (2,3,4,9,10,11,12)\n• Any 7: Riskabelt men höga odds (4:1)\n• Don\'t Pass: Motsatsen till Pass Line\n\nPass Line har bäst odds 
+            
+            // PLINKO - Nytt spel!
+            'plinko': 'PLINKO - Studsa Till Vinst:\n\nSÅ SPELAR DU:\n1. Välj insats (10-10,000 kr)\n2. Tryck "SLÄPP BOLL"\n3. Bollen studsar mellan pinnarna\n4. Landar i en multiplikator\n\nMULTIPLIKATORER:\n• 10x (Mitten) - JACKPOT!\n• 5x - Höga vinster\n• 2x, 1x - Stabila vinster\n• 0.5x - Förlorar hälften\n\nTIPS: Bollen tenderar mot mitten - högst odds där!',
+            'hur spelar man plinko': 'Välj insats och släpp bollen! Den studsar mellan pinnarna och landar i en multiplikator. 10x i mitten är jackpotten! Ju närmare mitten, desto högre vinst.',
+            'plinko tips': 'PLINKO TIPS:\n• Bollen tenderar mot mitten\n• 10x jackpot är i mitten\n• Sidorna ger lägre multiplikatorer (0.5x-1x)\n• Lyckobaserat - ingen strategi garanterar vinst!\n• Börja med små insatser för att lära känna spelet',
+            'plinko strategi': 'Plinko är rent lyckobaserat - bollen studsar slumpmässigt! Men kom ihåg:\n• Mitten har bäst odds (10x jackpot)\n• Sidorna oftast låga multiplikatorer\n• Spela för skojs skull, det är ingen strategi som fungerar',
+            'plinko jackpot': '10x JACKPOT i Plinko sitter i mitten! Om du satsar 1000 kr och träffar mitten vinner du 10,000 kr! Bollen tenderar att studsa mot mitten men det är ingen garanti.',
+            
+            // CRASH - Nytt spel!
+            'crash': 'CRASH - Planet Som Flyger:\n\nSÅ SPELAR DU:\n1. Välj insats och tryck "STARTA"\n2. Planet flyger uppåt, multiplikatorn ökar\n3. Tryck "TA UT" innan planet kraschar\n4. Planet kan krascha NÄR SOM HELST!\n\nSTRATEGI:\n• Säkert: Ta ut på 1.5x-2x\n• Balanserat: Vänta till 3x-5x\n• Riskabelt: Sikta på 8x+\n\nKom ihåg: Planet kan krascha direkt på 1.01x! Greed kills!',
+            'hur spelar man crash': 'Satsa och starta. Planet flyger uppåt medan multiplikatorn ökar. Tryck "TA UT" innan planet kraschar! Ju längre du väntar, desto mer vinner du - men planet kan krascha när som helst!',
+            'crash tips': 'CRASH TIPS:\n• Planet kan krascha DIREKT - var beredd!\n• Ta inte för stor risk första gången\n• Säkra vinster på 1.5x-2x är bättre än att förlora allt\n• Greed kills - ta ut i tid!\n• Ingen kan förutsäga när planet kraschar\n• Testa med små insatser först',
+            'crash strategi': 'CRASH STRATEGI:\n\n• Konservativ: Ta alltid ut på 1.5x-2x (säkra små vinster)\n• Balanserad: Sikta på 3x-4x (god risk/reward)\n• Aggressiv: Vänta på 5x+ (hög risk, hög belöning)\n\nKom ihåg: Planet KAN krascha direkt på 1.01x! Många spelare förlorar allt genom att vänta för länge.',
+            'när kraschar planet': 'Planet kraschar slumpmässigt mellan 1.01x och 10x! Det är helt omöjligt att förutsäga. Det kan krascha direkt eller flyga högt - det är spänningen i spelet!',
+            'crash musik': 'Ja! Crash har coola ljudeffekter - start-ljud när planet lyfter, tick-ljud när multiplikatorn ökar, och ett episkt krasch-ljud när det går fel!',
+            
+            // DICE - Nytt spel!
+            'dice': 'DICE - Gissa Numret:\n\nSÅ SPELAR DU:\n1. Välj ett intervall (1-20, 21-40, 41-60, 61-80, 81-100)\n2. Välj insats\n3. Kasta tärningen!\n4. Landar den i ditt intervall? = 5x vinst!\n\nCHANSER:\n• Varje intervall: 20% chans\n• Utbetalning: 5x insatsen\n• Enkelt men spännande!\n\nTIPS: Alla intervall har samma odds - välj ditt lyckotal!',
+            'hur spelar man dice': 'Välj ett nummer-intervall (t.ex. 41-60), välj insats och kasta tärningen. Landar den i ditt intervall vinner du 5x insatsen! Alla intervall har 20% vinstchans.',
+            'dice tips': 'DICE TIPS:\n• Alla intervall har exakt samma odds (20%)\n• 5x multiplikator vid vinst\n• Välj ditt favoritintervall - det spelar ingen roll statistiskt!\n• Enkelt spel, perfekt för nybörjare\n• 1 av 5 kast borde vinna (i genomsnitt)',
+            'dice strategi': 'Dice är rent lyckobaserat! Alla 5 intervall har exakt 20% vinstchans. Tips:\n• Välj bara ett intervall du känner för\n• Alla har samma odds\n• 5x vinst är bra odds\n• Bra spel för att bygga saldo långsamt',
+            'tärning': 'Vårt Dice-spel! Välj ett intervall mellan 1-100, kasta tärningen och hoppas den landar i ditt intervall för 5x vinst. Enkelt och roligt!',
+långsiktigt!',
+            
+            // PLINKO - Nytt spel!
+            'plinko': 'PLINKO - Studsa Till Vinst:\n\nSÅ SPELAR DU:\n1. Välj insats (10-10,000 kr)\n2. Tryck "SLÄPP BOLL"\n3. Bollen studsar mellan pinnarna\n4. Landar i en multiplikator\n\nMULTIPLIKATORER:\n• 10x (Mitten) - JACKPOT!\n• 5x - Höga vinster\n• 2x, 1x - Stabila vinster\n• 0.5x - Förlorar hälften\n\nTIPS: Bollen tenderar mot mitten - högst odds där!',
+            'hur spelar man plinko': 'Välj insats och släpp bollen! Den studsar mellan pinnarna och landar i en multiplikator. 10x i mitten är jackpotten! Ju närmare mitten, desto högre vinst.',
+            'plinko tips': 'PLINKO TIPS:\n• Bollen tenderar mot mitten\n• 10x jackpot är i mitten\n• Sidorna ger lägre multiplikatorer (0.5x-1x)\n• Lyckobaserat - ingen strategi garanterar vinst!\n• Börja med små insatser för att lära känna spelet',
+            'plinko strategi': 'Plinko är rent lyckobaserat - bollen studsar slumpmässigt! Men kom ihåg:\n• Mitten har bäst odds (10x jackpot)\n• Sidorna oftast låga multiplikatorer\n• Spela för skojs skull, det är ingen strategi som fungerar',
+            
+            // CRASH - Nytt spel!
+            'crash': 'CRASH - Planet Som Flyger:\n\nSÅ SPELAR DU:\n1. Välj insats och tryck "STARTA"\n2. Planet flyger uppåt, multiplikatorn ökar\n3. Tryck "TA UT" innan planet kraschar\n4. Planet kan krascha NÄR SOM HELST!\n\nSTRATEGI:\n• Säkert: Ta ut på 1.5x-2x\n• Balanserat: Vänta till 3x-5x\n• Riskabelt: Sikta på 8x+\n\nKom ihåg: Planet kan krascha direkt på 1.01x! Greed kills!',
+            'hur spelar man crash': 'Satsa och starta. Planet flyger uppåt medan multiplikatorn ökar. Tryck "TA UT" innan planet kraschar! Ju längre du väntar, desto mer vinner du - men planet kan krascha när som helst!',
+            'crash tips': 'CRASH TIPS:\n• Planet kan krascha DIREKT - var beredd!\n• Ta inte för stor risk första gången\n• Säkra vinster på 1.5x-2x är bättre än att förlora allt\n• Greed kills - ta ut i tid!\n• Ingen kan förutsäga när planet kraschar\n• Testa med små insatser först',
+            'crash strategi': 'CRASH STRATEGI:\n\n• Konservativ: Ta alltid ut på 1.5x-2x (säkra små vinster)\n• Balanserad: Sikta på 3x-4x (god risk/reward)\n• Aggressiv: Vänta på 5x+ (hög risk, hög belöning)\n\nKom ihåg: Planet KAN krascha direkt på 1.01x! Många spelare förlorar allt genom att vänta för länge.',
+            'när kraschar planet': 'Planet kraschar slumpmässigt mellan 1.01x och 10x! Det är helt omöjligt att förutsäga. Det kan krascha direkt eller flyga högt - det är spänningen i spelet!',
+            
+            // DICE - Nytt spel!
+            'dice': 'DICE - Gissa Numret:\n\nSÅ SPELAR DU:\n1. Välj ett intervall (1-20, 21-40, 41-60, 61-80, 81-100)\n2. Välj insats\n3. Kasta tärningen!\n4. Landar den i ditt intervall? = 5x vinst!\n\nCHANSER:\n• Varje intervall: 20% chans\n• Utbetalning: 5x insatsen\n• Enkelt men spännande!\n\nTIPS: Alla intervall har samma odds - välj ditt lyckotal!',
+            'hur spelar man dice': 'Välj ett nummer-intervall (t.ex. 41-60), välj insats och kasta tärningen. Landar den i ditt intervall vinner du 5x insatsen! Alla intervall har 20% vinstchans.',
+            'dice tips': 'DICE TIPS:\n• Alla intervall har exakt samma odds (20%)\n• 5x multiplikator vid vinst\n• Välj ditt favoritintervall - det spelar ingen roll statistiskt!\n• Enkelt spel, perfekt för nybörjare\n• 1 av 5 kast borde vinna (i genomsnitt)',
+            'dice strategi': 'Dice är rent lyckobaserat! Alla 5 intervall har exakt 20% vinstchans. Tips:\n• Välj bara ett intervall du känner för\n• Alla har samma odds\n• 5x vinst är bra odds\n• Bra spel för att bygga saldo långsamt',
+            
+            // Saldo & Bank
+            'saldo': `Ditt nuvarande saldo är ${balance.toLocaleString()} kr. Du kan köpa fler chips via Banken i huvudmenyn om du går back! Känn dig som en riktig high-roller!`,
+            'pengar': `Du har ${balance.toLocaleString()} kr just nu. Vill du köpa mer via Banken? Där kan du köpa 1,000 - 50,000 kr i chips!`,
+            'köpa': 'Du kan köpa fler chips via BANKEN i huvudmenyn! Välj mellan 1,000, 5,000, 10,000 eller 50,000 kr. Detta är virtuella pengar för underhållning - inga riktiga pengar!',
+            'bank': 'Banken finns i huvudmenyn (uppe i högra hörnet). Där kan du köpa fler virtuella kronor om ditt saldo börjar bli lågt. Välj mellan 1,000 kr upp till 50,000 kr!',
+            'hur får jag mer pengar': 'Klicka på "Bank" i huvudmenyn för att köpa fler virtuella kronor! Du kan även vinna pengar genom att spela spelen. Kom ihåg - detta är virtuella pengar för skoj skull!',
+            
+            // Regler & Info
+            'regler': 'Vilket spel vill du veta reglerna för? Jag kan förklara Slots, Roulette, Blackjack, Poker eller Craps i detalj. Skriv namnet på spelet!',
+            'hjälp': 'Jag kan hjälpa dig med:\n\n📚 SPELREGLER - Detaljerade förklaringar\n💰 SALDO - Visa ditt nuvarande saldo\n💡 STRATEGI - Tips för att vinna\n🎯 VAL AV SPEL - Hitta rätt spel för dig\n🏦 BANK - Hur du köper fler chips\n\nVad vill du veta mer om?',
+            'tips': 'ALLMÄNNA TIPS:\n\n1. BÖRJA SMÅTT - Testa spel med låga insatser först\n2. LÄR DIG REGLERNA - Förstå spelet innan stora insatser\n3. SLOTS - Enklast, rent lyckobaserat\n4. BLACKJACK - Kräver strategi men bäst odds\n5. HA KUL - Detta är virtuella pengar, enjoy!\n\nVilket spel intresserar dig?',
+            
+            // Om Cercle Privé
+            'cercle': 'Cercle Privé är ett exklusivt virtuellt casino skapat som skolprojekt. Här spelar du med virtuella kronor - inga riktiga pengar! Vi erbjuder fem klassiska casinospel med elegant design inspirerad av "old money"-estetik. Välkommen!',
+            'vad är cercle': 'Cercle Privé betyder "Den Privata Cirkeln" på franska. Det är ett exklusivt virtuellt casino där du kan spela klassiska casinospel med virtuella pengar. Perfekt för att lära sig spelregler utan risk!',
+            'skolprojekt': 'Ja, detta är ett skolprojekt om AI-assisterad webbutveckling! Hemsidan skapades med hjälp av Claude (AI) och visar hur man kan bygga interaktiva webbapplikationer. Coolt, eller hur?',
+            'virtuella pengar': 'Alla pengar här är virtuella - inga riktiga pengar används! Du kan inte förlora några riktiga pengar och kan inte vinna riktiga pengar. Detta är rent för underhållning och utbildning. Spela fritt!',
+            
+            // Tack & Avslut
+            'tack': 'Varsågod! Är det något mer du undrar över? Jag finns här för att hjälpa dig få ut det mesta av Cercle Privé!',
+            'tack så mycket': 'Det var så lite så! Lycka till med spelen och kom tillbaka om du har fler frågor. Ha kul!',
+            'hejdå': 'Hejdå! Lycka till med spelen och kom gärna tillbaka om du behöver hjälp. Ha en fantastisk dag!',
+            'adjö': 'Adjö! Tack för att du besökte Cercle Privé. Återkom snart!',
+            
+            // Nybörjare
+            'nybörjare': 'Välkommen som nybörjare! Jag rekommenderar:\n\n1. BÖRJA MED SLOTS - Enklast spelet\n2. TESTA ROULETTE - Satsa på röd/svart\n3. LÄR DIG BLACKJACK - Mest strategi\n\nVill du att jag förklarar något spel i detalj?',
+            'första gången': 'Första gången här? Perfekt! Börja med Slots eller Roulette - de är enklast. Du har 10,000 kr att spela för. Testa lite av varje spel med låga insatser först. Vad sägs om att börja med Slots?',
+            'hur börjar': 'Så här börjar du:\n\n1. Gå till lobby (klicka loggan)\n2. Välj ett spel (Slots rekommenderas för nybörjare)\n3. Välj insats och spela!\n4. Om du behöver fler pengar, klicka "Bank"\n\nVill du att jag guidar dig genom ett specifikt spel?',
+            
+            // Default
+            'default': 'Hmm, jag är inte säker på vad du menar. Jag kan hjälpa dig med:\n\n• Spelregler (Slots, Roulette, Blackjack, Poker, Craps)\n• Strategi och tips\n• Visa ditt saldo\n• Förklara hur spelen fungerar\n• Rekommendera spel\n\nKan du formulera om din fråga?'
+        };
+
+        function addMessage(content, isUser = false) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
+            
+            messageDiv.innerHTML = `
+                <div class="message-sender">${isUser ? 'Du' : 'Concierge'}</div>
+                <div class="message-content">${content}</div>
+            `;
+            
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function showTyping() {
+            const messagesDiv = document.getElementById('chatMessages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message bot';
+            typingDiv.id = 'typing-indicator-msg';
+            typingDiv.innerHTML = `
+                <div class="typing-indicator active">
+                    <span></span><span></span><span></span>
+                </div>
+            `;
+            messagesDiv.appendChild(typingDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function hideTyping() {
+            const typing = document.getElementById('typing-indicator-msg');
+            if (typing) typing.remove();
+        }
+
+        function getResponse(message) {
+            const msg = message.toLowerCase();
+            
+            for (let key in responses) {
+                if (msg.includes(key)) {
+                    return responses[key];
+                }
+            }
+            
+            return responses['default'];
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            addMessage(message, true);
+            input.value = '';
+            
+            showTyping();
+            
+            setTimeout(() => {
+                hideTyping();
+                const response = getResponse(message);
+                addMessage(response);
+            }, 1000 + Math.random() * 1000);
+        }
+
+        function askQuestion(question) {
+            document.getElementById('chatInput').value = question;
+            sendMessage();
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+    </script>
+</body>
+</html>

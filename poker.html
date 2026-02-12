@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Texas Hold'em - Cercle Privé</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Cormorant+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --midnight: #0a1128;
+            --gold: #d4af37;
+            --gold-dim: #8a7425;
+            --white: #f5f5f5;
+            --green: #1a5f3e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background: var(--midnight);
+            color: var(--white);
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 30%, rgba(212, 175, 55, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--gold-dim);
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--gold);
+            text-decoration: none;
+        }
+
+        .balance {
+            font-size: 1.3rem;
+            color: var(--gold);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .game-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            text-align: center;
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--gold);
+            opacity: 0.8;
+            margin-bottom: 2rem;
+        }
+
+        .poker-table {
+            background: linear-gradient(135deg, rgba(26, 95, 62, 0.9), rgba(15, 60, 40, 0.9));
+            border: 4px solid var(--gold);
+            border-radius: 50% / 40%;
+            padding: 3rem 2rem;
+            position: relative;
+            min-height: 600px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .community-cards {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+            min-height: 140px;
+            align-items: center;
+        }
+
+        .card {
+            width: 80px;
+            height: 112px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            position: relative;
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card.back {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+            color: var(--midnight);
+        }
+
+        .card.hearts, .card.diamonds {
+            color: #d32f2f;
+        }
+
+        .card.clubs, .card.spades {
+            color: #000;
+        }
+
+        .player-area, .ai-area {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .player-area {
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .ai-area {
+            top: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .hand {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .player-info {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            border: 2px solid var(--gold);
+            text-align: center;
+        }
+
+        .player-name {
+            font-size: 1.2rem;
+            color: var(--gold);
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .player-chips {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .pot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(212, 175, 55, 0.2);
+            border: 2px solid var(--gold);
+            padding: 1rem 2rem;
+            border-radius: 50%;
+            text-align: center;
+        }
+
+        .pot-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .pot-amount {
+            font-size: 2rem;
+            color: var(--gold);
+            font-weight: 700;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: 2px solid var(--gold);
+            background: var(--gold);
+            color: var(--midnight);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: transparent;
+            color: var(--gold);
+        }
+
+        .btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .btn-danger {
+            background: #d32f2f;
+            border-color: #d32f2f;
+            color: white;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: transparent;
+            color: #d32f2f;
+        }
+
+        .btn-success {
+            background: #2e7d32;
+            border-color: #2e7d32;
+            color: white;
+        }
+
+        .btn-success:hover:not(:disabled) {
+            background: transparent;
+            color: #2e7d32;
+        }
+
+        .game-status {
+            text-align: center;
+            font-size: 1.5rem;
+            color: var(--gold);
+            margin: 1rem 0;
+            min-height: 2rem;
+        }
+
+        .bet-input {
+            padding: 0.8rem;
+            width: 120px;
+            font-size: 1.1rem;
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid var(--gold-dim);
+            color: var(--white);
+            text-align: center;
+            margin: 0 0.5rem;
+        }
+
+        .hand-rank {
+            font-size: 1rem;
+            color: var(--gold);
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        .info-box {
+            background: rgba(0,0,0,0.3);
+            padding: 1.5rem;
+            border: 1px solid var(--gold-dim);
+            border-radius: 5px;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="logo">← Cercle Privé</a>
+            <div class="balance">
+                Saldo: <span id="balance">10,000</span> kr
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 class="game-title">♠️ TEXAS HOLD'EM ♠️</h1>
+        <p class="subtitle">Spela mot AI-motståndaren</p>
+
+        <div class="poker-table">
+            <div class="ai-area">
+                <div class="player-info">
+                    <div class="player-name">AI Dealer</div>
+                    <div class="player-chips"><span id="aiChips">10,000</span> kr</div>
+                    <div class="hand-rank" id="aiHandRank"></div>
+                </div>
+                <div class="hand" id="aiHand"></div>
+            </div>
+
+            <div class="community-cards" id="communityCards"></div>
+
+            <div class="pot" id="potDisplay">
+                <div class="pot-label">Pott</div>
+                <div class="pot-amount"><span id="potAmount">0</span> kr</div>
+            </div>
+
+            <div class="player-area">
+                <div class="hand" id="playerHand"></div>
+                <div class="player-info">
+                    <div class="player-name">Du</div>
+                    <div class="player-chips"><span id="playerChips">10,000</span> kr</div>
+                    <div class="hand-rank" id="playerHandRank"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="game-status" id="gameStatus">Tryck "Ny Hand" för att börja spela</div>
+
+        <div class="controls">
+            <button class="btn" id="newHandBtn" onclick="newHand()">NY HAND (100 kr)</button>
+            <button class="btn btn-danger" id="foldBtn" onclick="fold()" disabled>FOLD</button>
+            <button class="btn btn-success" id="callBtn" onclick="call()" disabled>CALL <span id="callAmount">0</span></button>
+            <input type="number" class="bet-input" id="raiseAmount" value="200" min="100" step="50" disabled>
+            <button class="btn" id="raiseBtn" onclick="raise()" disabled>RAISE</button>
+        </div>
+
+        <div class="info-box">
+            <h3 style="color: var(--gold); margin-bottom: 1rem;">Hur Spelar Man?</h3>
+            <p style="line-height: 1.6;">
+                <strong>Omgång:</strong> Du och AI får 2 kort vardera. Sedan läggs 5 gemensamma kort ut (Flop 3, Turn 1, River 1). 
+                Bästa 5-kortshanden vinner!<br><br>
+                <strong>Actions:</strong> FOLD (ge upp), CALL (matcha bet), RAISE (höj insatsen)
+            </p>
+        </div>
+    </div>
+
+    <script>
+        let balance = parseInt(localStorage.getItem('balance')) || 10000;
+        let playerChips = 10000;
+        let aiChips = 10000;
+        let pot = 0;
+        let deck = [];
+        let playerHand = [];
+        let aiHand = [];
+        let communityCards = [];
+        let currentBet = 0;
+        let playerBet = 0;
+        let aiBet = 0;
+        let gamePhase = 'waiting'; // waiting, preflop, flop, turn, river, showdown
+        let playerFolded = false;
+
+        const suits = ['♠️', '♥️', '♦️', '♣️'];
+        const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+
+            if (type === 'deal') {
+                osc.frequency.value = 300;
+                gain.gain.setValueAtTime(0.2, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                osc.start();
+                osc.stop(audioContext.currentTime + 0.1);
+            } else if (type === 'win') {
+                for (let i = 0; i < 4; i++) {
+                    const o = audioContext.createOscillator();
+                    const g = audioContext.createGain();
+                    o.connect(g);
+                    g.connect(audioContext.destination);
+                    o.frequency.value = 600 + (i * 150);
+                    g.gain.setValueAtTime(0.2, audioContext.currentTime + (i * 0.1));
+                    g.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + (i * 0.1) + 0.3);
+                    o.start(audioContext.currentTime + (i * 0.1));
+                    o.stop(audioContext.currentTime + (i * 0.1) + 0.3);
+                }
+            } else if (type === 'lose') {
+                osc.frequency.value = 200;
+                osc.type = 'sawtooth';
+                gain.gain.setValueAtTime(0.2, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+                osc.start();
+                osc.stop(audioContext.currentTime + 0.4);
+            } else if (type === 'fold') {
+                osc.frequency.value = 150;
+                gain.gain.setValueAtTime(0.15, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                osc.start();
+                osc.stop(audioContext.currentTime + 0.2);
+            }
+        }
+
+        document.getElementById('balance').textContent = balance.toLocaleString();
+
+        function updateBalance(amount) {
+            balance = amount;
+            document.getElementById('balance').textContent = balance.toLocaleString();
+            localStorage.setItem('balance', balance);
+        }
+
+        function updateDisplay() {
+            document.getElementById('playerChips').textContent = playerChips.toLocaleString();
+            document.getElementById('aiChips').textContent = aiChips.toLocaleString();
+            document.getElementById('potAmount').textContent = pot.toLocaleString();
+        }
+
+        function createDeck() {
+            deck = [];
+            for (let suit of suits) {
+                for (let value of values) {
+                    deck.push({ value, suit });
+                }
+            }
+            // Shuffle
+            for (let i = deck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]];
+            }
+        }
+
+        function drawCard() {
+            return deck.pop();
+        }
+
+        function renderCard(card, hidden = false) {
+            if (hidden) {
+                return `<div class="card back">?</div>`;
+            }
+            const suitClass = (card.suit === '♥️' || card.suit === '♦️') ? 'hearts' : 'clubs';
+            return `<div class="card ${suitClass}">${card.value}${card.suit}</div>`;
+        }
+
+        function evaluateHand(hand, community) {
+            // Simplified hand evaluation
+            const allCards = [...hand, ...community];
+            const values = allCards.map(c => c.value);
+            const suits = allCards.map(c => c.suit);
+            
+            const valueCount = {};
+            values.forEach(v => valueCount[v] = (valueCount[v] || 0) + 1);
+            
+            const counts = Object.values(valueCount).sort((a, b) => b - a);
+            const suitCount = {};
+            suits.forEach(s => suitCount[s] = (suitCount[s] || 0) + 1);
+            const maxSuit = Math.max(...Object.values(suitCount));
+            
+            const hasFlush = maxSuit >= 5;
+            const hasFourOfKind = counts[0] === 4;
+            const hasThreeOfKind = counts[0] === 3;
+            const hasPair = counts[0] === 2;
+            const hasTwoPair = counts[0] === 2 && counts[1] === 2;
+            const hasFullHouse = counts[0] === 3 && counts[1] === 2;
+            
+            if (hasFourOfKind) return { rank: 7, name: 'Four of a Kind' };
+            if (hasFullHouse) return { rank: 6, name: 'Full House' };
+            if (hasFlush) return { rank: 5, name: 'Flush' };
+            if (hasThreeOfKind) return { rank: 3, name: 'Three of a Kind' };
+            if (hasTwoPair) return { rank: 2, name: 'Two Pair' };
+            if (hasPair) return { rank: 1, name: 'One Pair' };
+            
+            const highCard = values.includes('A') ? 'A' : values[0];
+            return { rank: 0, name: `High Card ${highCard}` };
+        }
+
+        function newHand() {
+            if (balance < 100) {
+                alert('Otillräckligt saldo! Köp mer från banken.');
+                return;
+            }
+
+            playSound('deal');
+            
+            // Ante
+            balance -= 100;
+            playerChips -= 100;
+            pot = 200;
+            aiChips -= 100;
+            currentBet = 100;
+            playerBet = 100;
+            aiBet = 100;
+            playerFolded = false;
+            
+            updateBalance(balance);
+            
+            createDeck();
+            playerHand = [drawCard(), drawCard()];
+            aiHand = [drawCard(), drawCard()];
+            communityCards = [];
+            
+            gamePhase = 'preflop';
+            
+            renderGame();
+            updateDisplay();
+            document.getElementById('gameStatus').textContent = 'Din tur - Fold, Call eller Raise?';
+            
+            enableControls(true);
+            document.getElementById('newHandBtn').disabled = true;
+        }
+
+        function renderGame() {
+            // Player hand
+            document.getElementById('playerHand').innerHTML = playerHand.map(c => renderCard(c)).join('');
+            
+            // AI hand (hidden until showdown)
+            document.getElementById('aiHand').innerHTML = aiHand.map(c => renderCard(c, gamePhase !== 'showdown')).join('');
+            
+            // Community cards
+            document.getElementById('communityCards').innerHTML = communityCards.map(c => renderCard(c)).join('');
+            
+            // Hand ranks
+            if (communityCards.length >= 3) {
+                const playerEval = evaluateHand(playerHand, communityCards);
+                document.getElementById('playerHandRank').textContent = playerEval.name;
+                
+                if (gamePhase === 'showdown') {
+                    const aiEval = evaluateHand(aiHand, communityCards);
+                    document.getElementById('aiHandRank').textContent = aiEval.name;
+                }
+            }
+        }
+
+        function enableControls(enabled) {
+            document.getElementById('foldBtn').disabled = !enabled;
+            document.getElementById('callBtn').disabled = !enabled;
+            document.getElementById('raiseBtn').disabled = !enabled;
+            document.getElementById('raiseAmount').disabled = !enabled;
+            document.getElementById('callAmount').textContent = (currentBet - playerBet) + ' kr';
+        }
+
+        function fold() {
+            playSound('fold');
+            playerFolded = true;
+            aiChips += pot;
+            document.getElementById('gameStatus').textContent = '❌ Du foldade - AI vinner ' + pot + ' kr';
+            endHand();
+        }
+
+        async function call() {
+            const callAmount = currentBet - playerBet;
+            if (balance < callAmount) {
+                alert('Inte tillräckligt med pengar!');
+                return;
+            }
+            
+            balance -= callAmount;
+            playerChips -= callAmount;
+            playerBet += callAmount;
+            pot += callAmount;
+            updateBalance(balance);
+            updateDisplay();
+            
+            enableControls(false);
+            
+            await aiTurn();
+            advancePhase();
+        }
+
+        async function raise() {
+            const raiseAmount = parseInt(document.getElementById('raiseAmount').value);
+            const totalBet = currentBet + raiseAmount;
+            const playerNeed = totalBet - playerBet;
+            
+            if (balance < playerNeed) {
+                alert('Inte tillräckligt med pengar!');
+                return;
+            }
+            
+            balance -= playerNeed;
+            playerChips -= playerNeed;
+            playerBet += playerNeed;
+            pot += playerNeed;
+            currentBet = totalBet;
+            updateBalance(balance);
+            updateDisplay();
+            
+            enableControls(false);
+            
+            await aiTurn();
+            advancePhase();
+        }
+
+        async function aiTurn() {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            const handStrength = evaluateHand(aiHand, communityCards).rank;
+            const random = Math.random();
+            
+            if (handStrength >= 5 || (handStrength >= 2 && random > 0.5)) {
+                // AI calls or raises
+                const aiNeed = currentBet - aiBet;
+                aiChips -= aiNeed;
+                aiBet += aiNeed;
+                pot += aiNeed;
+                document.getElementById('gameStatus').textContent = 'AI kallar';
+            } else if (random > 0.7) {
+                // AI raises occasionally
+                const raiseAmt = 100;
+                aiChips -= (currentBet - aiBet + raiseAmt);
+                pot += (currentBet - aiBet + raiseAmt);
+                aiBet = currentBet + raiseAmt;
+                currentBet += raiseAmt;
+                document.getElementById('gameStatus').textContent = 'AI höjer med ' + raiseAmt + ' kr';
+            } else {
+                // AI folds
+                playerChips += pot;
+                balance += pot;
+                updateBalance(balance);
+                document.getElementById('gameStatus').textContent = '✅ AI foldade - Du vinner ' + pot + ' kr';
+                playSound('win');
+                endHand();
+                return;
+            }
+            
+            updateDisplay();
+        }
+
+        async function advancePhase() {
+            if (playerFolded) return;
+            
+            await new Promise(resolve => setTimeout(resolve, 800));
+            
+            if (gamePhase === 'preflop') {
+                // Flop
+                playSound('deal');
+                communityCards = [drawCard(), drawCard(), drawCard()];
+                gamePhase = 'flop';
+                document.getElementById('gameStatus').textContent = 'Floppen ligger ute';
+            } else if (gamePhase === 'flop') {
+                // Turn
+                playSound('deal');
+                communityCards.push(drawCard());
+                gamePhase = 'turn';
+                document.getElementById('gameStatus').textContent = 'Turn-kortet ligger ute';
+            } else if (gamePhase === 'turn') {
+                // River
+                playSound('deal');
+                communityCards.push(drawCard());
+                gamePhase = 'river';
+                document.getElementById('gameStatus').textContent = 'River - sista kortet';
+            } else if (gamePhase === 'river') {
+                // Showdown
+                gamePhase = 'showdown';
+                showdown();
+                return;
+            }
+            
+            renderGame();
+            enableControls(true);
+        }
+
+        function showdown() {
+            renderGame();
+            
+            const playerEval = evaluateHand(playerHand, communityCards);
+            const aiEval = evaluateHand(aiHand, communityCards);
+            
+            if (playerEval.rank > aiEval.rank) {
+                playerChips += pot;
+                balance += pot;
+                updateBalance(balance);
+                document.getElementById('gameStatus').textContent = `🎉 Du vinner med ${playerEval.name}! +${pot} kr`;
+                playSound('win');
+            } else if (aiEval.rank > playerEval.rank) {
+                aiChips += pot;
+                document.getElementById('gameStatus').textContent = `❌ AI vinner med ${aiEval.name}`;
+                playSound('lose');
+            } else {
+                // Split pot
+                const split = Math.floor(pot / 2);
+                playerChips += split;
+                aiChips += split;
+                balance += split;
+                updateBalance(balance);
+                document.getElementById('gameStatus').textContent = 'Oavgjort - potten delas';
+            }
+            
+            endHand();
+        }
+
+        function endHand() {
+            pot = 0;
+            playerBet = 0;
+            aiBet = 0;
+            currentBet = 0;
+            gamePhase = 'waiting';
+            updateDisplay();
+            enableControls(false);
+            document.getElementById('newHandBtn').disabled = false;
+        }
+
+        updateDisplay();
+    </script>
+</body>
+</html>

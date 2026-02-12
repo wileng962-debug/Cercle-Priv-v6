@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Craps - Cercle Privé</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Cormorant+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --midnight: #0a1128;
+            --gold: #d4af37;
+            --gold-dim: #8a7425;
+            --white: #f5f5f5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background: var(--midnight);
+            color: var(--white);
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 30%, rgba(212, 175, 55, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--gold-dim);
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--gold);
+            text-decoration: none;
+        }
+
+        .balance {
+            font-size: 1.3rem;
+            color: var(--gold);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .game-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            text-align: center;
+            color: var(--gold);
+            margin-bottom: 2rem;
+        }
+
+        .table {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(10, 17, 40, 0.9));
+            border: 3px solid var(--gold);
+            border-radius: 10px;
+            padding: 3rem 2rem;
+        }
+
+        .dice-container {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .die {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 10px;
+            display: grid;
+            grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+            padding: 10px;
+            gap: 5px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            animation: roll 0.5s ease;
+        }
+
+        @keyframes roll {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(90deg); }
+            50% { transform: rotate(180deg); }
+            75% { transform: rotate(270deg); }
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            background: #000;
+            border-radius: 50%;
+        }
+
+        .game-info {
+            text-align: center;
+            font-size: 1.3rem;
+            color: var(--gold);
+            margin: 2rem 0;
+        }
+
+        .betting-area {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .bet-option {
+            padding: 1.5rem;
+            border: 2px solid var(--gold-dim);
+            background: rgba(0, 0, 0, 0.4);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .bet-option:hover {
+            border-color: var(--gold);
+            background: rgba(212, 175, 55, 0.2);
+        }
+
+        .bet-option.active {
+            background: var(--gold);
+            color: var(--midnight);
+            font-weight: 600;
+        }
+
+        .bet-option h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .bet-option p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .controls {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .bet-input-area {
+            margin-bottom: 1rem;
+        }
+
+        .bet-input-area input {
+            padding: 0.8rem;
+            width: 150px;
+            font-size: 1.2rem;
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid var(--gold-dim);
+            color: var(--white);
+            text-align: center;
+        }
+
+        .btn {
+            padding: 1rem 2.5rem;
+            border: 2px solid var(--gold);
+            background: var(--gold);
+            color: var(--midnight);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin: 0.5rem;
+        }
+
+        .btn:hover {
+            background: transparent;
+            color: var(--gold);
+        }
+
+        .result {
+            text-align: center;
+            font-size: 2rem;
+            margin-top: 2rem;
+            color: var(--gold);
+            min-height: 3rem;
+        }
+
+        .result.win {
+            color: #4ade80;
+        }
+
+        .result.lose {
+            color: #f87171;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="logo">← Cercle Privé</a>
+            <div class="balance">
+                Saldo: <span id="balance">10,000</span> kr
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 class="game-title">🎲 CRAPS 🎲</h1>
+
+        <div class="table">
+            <div class="dice-container" id="diceContainer">
+                <div class="die" id="die1"></div>
+                <div class="die" id="die2"></div>
+            </div>
+
+            <div class="game-info">
+                <div>Totalt: <span id="total" style="font-size: 2rem; font-weight: 600;">-</span></div>
+                <div id="point" style="margin-top: 0.5rem;"></div>
+            </div>
+
+            <div class="betting-area">
+                <div class="bet-option" onclick="selectBet('pass')">
+                    <h3>PASS LINE</h3>
+                    <p>Vinn på 7 eller 11 på första kastet<br>Utbetalning: 1:1</p>
+                </div>
+                <div class="bet-option" onclick="selectBet('dontpass')">
+                    <h3>DON'T PASS</h3>
+                    <p>Vinn på 2 eller 3 på första kastet<br>Utbetalning: 1:1</p>
+                </div>
+                <div class="bet-option" onclick="selectBet('field')">
+                    <h3>FIELD</h3>
+                    <p>Vinn på 2,3,4,9,10,11,12<br>Utbetalning: 1:1 (2x på 2 och 12)</p>
+                </div>
+                <div class="bet-option" onclick="selectBet('any7')">
+                    <h3>ANY 7</h3>
+                    <p>Vinn om nästa kast blir 7<br>Utbetalning: 4:1</p>
+                </div>
+            </div>
+
+            <div class="controls">
+                <div class="bet-input-area">
+                    <label style="color: var(--gold); margin-right: 1rem;">Insats:</label>
+                    <input type="number" id="betAmount" value="100" min="10" step="10">
+                </div>
+                <button class="btn" onclick="roll()">KASTA TÄRNINGAR</button>
+                <button class="btn" onclick="newGame()" style="background: transparent; color: var(--gold);">NYTT SPEL</button>
+            </div>
+
+            <div class="result" id="result"></div>
+        </div>
+    </div>
+
+    <script>
+        let balance = parseInt(localStorage.getItem('balance')) || 10000;
+        let currentBet = null;
+
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            
+            if (type === 'roll') {
+                osc.frequency.value = 300 + Math.random() * 150;
+                osc.type = 'square';
+                gain.gain.setValueAtTime(0.18, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.12);
+                osc.start();
+                osc.stop(audioContext.currentTime + 0.12);
+            } else if (type === 'win') {
+                for (let i = 0; i < 3; i++) {
+                    const o = audioContext.createOscillator();
+                    const g = audioContext.createGain();
+                    o.connect(g);
+                    g.connect(audioContext.destination);
+                    o.frequency.value = 750 + (i * 180);
+                    g.gain.setValueAtTime(0.2, audioContext.currentTime + (i * 0.1));
+                    g.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + (i * 0.1) + 0.3);
+                    o.start(audioContext.currentTime + (i * 0.1));
+                    o.stop(audioContext.currentTime + (i * 0.1) + 0.3);
+                }
+            } else if (type === 'lose') {
+                osc.frequency.value = 180;
+                osc.type = 'sawtooth';
+                gain.gain.setValueAtTime(0.2, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.35);
+                osc.start();
+                osc.stop(audioContext.currentTime + 0.35);
+            }
+        }
+        let point = null;
+        let isFirstRoll = true;
+
+        document.getElementById('balance').textContent = balance.toLocaleString();
+
+        const dotPatterns = {
+            1: [4],
+            2: [0, 8],
+            3: [0, 4, 8],
+            4: [0, 2, 6, 8],
+            5: [0, 2, 4, 6, 8],
+            6: [0, 2, 3, 5, 6, 8]
+        };
+
+        function renderDie(element, value) {
+            element.innerHTML = '';
+            const pattern = dotPatterns[value];
+            for (let i = 0; i < 9; i++) {
+                if (pattern.includes(i)) {
+                    const dot = document.createElement('div');
+                    dot.className = 'dot';
+                    element.appendChild(dot);
+                } else {
+                    element.appendChild(document.createElement('div'));
+                }
+            }
+        }
+
+        function selectBet(type) {
+            currentBet = type;
+            document.querySelectorAll('.bet-option').forEach(el => el.classList.remove('active'));
+            event.target.closest('.bet-option').classList.add('active');
+        }
+
+        function roll() {
+            if (!currentBet) {
+                alert('Välj en insats först!');
+                return;
+            }
+
+            const betAmount = parseInt(document.getElementById('betAmount').value);
+            if (betAmount > balance) {
+                alert('Otillräckligt saldo!');
+                return;
+            }
+
+            balance -= betAmount;
+            localStorage.setItem('balance', balance);
+            document.getElementById('balance').textContent = balance.toLocaleString();
+
+            const die1 = Math.ceil(Math.random() * 6);
+            const die2 = Math.ceil(Math.random() * 6);
+            const total = die1 + die2;
+
+            renderDie(document.getElementById('die1'), die1);
+            renderDie(document.getElementById('die2'), die2);
+            document.getElementById('total').textContent = total;
+
+            checkWin(total, betAmount);
+        }
+
+        function checkWin(total, betAmount) {
+            let win = false;
+            let payout = 0;
+            let message = '';
+
+            if (currentBet === 'pass') {
+                if (isFirstRoll) {
+                    if ([7, 11].includes(total)) {
+                        win = true;
+                        payout = betAmount * 2;
+                        message = 'NATURAL! Du vann!';
+                    } else if ([2, 3, 12].includes(total)) {
+                        message = 'CRAPS! Du förlorade.';
+                    } else {
+                        point = total;
+                        isFirstRoll = false;
+                        document.getElementById('point').textContent = `Point: ${point}`;
+                        message = `Point satt till ${point}. Kasta igen!`;
+                        balance += betAmount;
+                        localStorage.setItem('balance', balance);
+                        document.getElementById('balance').textContent = balance.toLocaleString();
+                        return;
+                    }
+                } else {
+                    if (total === point) {
+                        win = true;
+                        payout = betAmount * 2;
+                        message = `Träffade point ${point}! Du vann!`;
+                        isFirstRoll = true;
+                        point = null;
+                        document.getElementById('point').textContent = '';
+                    } else if (total === 7) {
+                        message = 'SEVEN OUT! Du förlorade.';
+                        isFirstRoll = true;
+                        point = null;
+                        document.getElementById('point').textContent = '';
+                    } else {
+                        message = 'Kasta igen!';
+                        balance += betAmount;
+                        localStorage.setItem('balance', balance);
+                        document.getElementById('balance').textContent = balance.toLocaleString();
+                        return;
+                    }
+                }
+            } else if (currentBet === 'field') {
+                if ([2, 3, 4, 9, 10, 11, 12].includes(total)) {
+                    win = true;
+                    payout = [2, 12].includes(total) ? betAmount * 3 : betAmount * 2;
+                    message = `Field vann! ${payout} kr`;
+                } else {
+                    message = 'Field förlorade.';
+                }
+            } else if (currentBet === 'any7') {
+                if (total === 7) {
+                    win = true;
+                    payout = betAmount * 5;
+                    message = 'SEVEN! Du vann!';
+                } else {
+                    message = 'Inte 7. Du förlorade.';
+                }
+            } else if (currentBet === 'dontpass') {
+                if (isFirstRoll) {
+                    if ([2, 3].includes(total)) {
+                        win = true;
+                        payout = betAmount * 2;
+                        message = 'Don\'t Pass vann!';
+                    } else if ([7, 11].includes(total)) {
+                        message = 'Don\'t Pass förlorade.';
+                    }
+                }
+            }
+
+            if (win) {
+                balance += payout;
+                localStorage.setItem('balance', balance);
+                document.getElementById('balance').textContent = balance.toLocaleString();
+                document.getElementById('result').className = 'result win';
+            } else {
+                document.getElementById('result').className = 'result lose';
+            }
+
+            document.getElementById('result').textContent = message;
+        }
+
+        function newGame() {
+            isFirstRoll = true;
+            point = null;
+            document.getElementById('point').textContent = '';
+            document.getElementById('result').textContent = '';
+            document.getElementById('total').textContent = '-';
+        }
+    </script>
+</body>
+</html>

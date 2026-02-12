@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plinko - Cercle Privé</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Cormorant+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --midnight: #0a1128;
+            --gold: #d4af37;
+            --gold-dim: #8a7425;
+            --white: #f5f5f5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background: var(--midnight);
+            color: var(--white);
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 30%, rgba(212, 175, 55, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--gold-dim);
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--gold);
+            text-decoration: none;
+        }
+
+        .balance {
+            font-size: 1.3rem;
+            color: var(--gold);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .game-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            text-align: center;
+            color: var(--gold);
+            margin-bottom: 2rem;
+        }
+
+        .game-board {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(10, 17, 40, 0.9));
+            border: 3px solid var(--gold);
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .plinko-board {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            height: 650px;
+            margin: 0 auto 2rem;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid var(--gold-dim);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .peg {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: var(--gold);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+
+        .ball {
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            background: radial-gradient(circle at 30% 30%, #fff, var(--gold));
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.8);
+            transition: all 0.15s ease;
+            z-index: 10;
+        }
+
+        .multipliers {
+            display: flex;
+            justify-content: space-around;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .multiplier {
+            flex: 1;
+            padding: 1.2rem 0.3rem;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border: 1px solid var(--gold-dim);
+            font-family: 'Playfair Display', serif;
+        }
+
+        .multiplier.jackpot { 
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.6), rgba(255, 215, 0, 0.4)); 
+            color: #fff;
+            font-size: 1.4rem;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+        }
+        .multiplier.high { 
+            background: rgba(74, 222, 128, 0.4); 
+            color: #4ade80; 
+        }
+        .multiplier.mid { 
+            background: rgba(212, 175, 55, 0.25); 
+            color: var(--gold); 
+        }
+        .multiplier.low { 
+            background: rgba(100, 100, 100, 0.3); 
+            color: #aaa; 
+        }
+
+        .controls {
+            text-align: center;
+        }
+
+        .bet-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .bet-input {
+            padding: 0.8rem;
+            width: 150px;
+            font-size: 1.2rem;
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid var(--gold-dim);
+            color: var(--white);
+            text-align: center;
+        }
+
+        .btn {
+            padding: 1rem 2.5rem;
+            border: 2px solid var(--gold);
+            background: var(--gold);
+            color: var(--midnight);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: transparent;
+            color: var(--gold);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .result {
+            text-align: center;
+            font-size: 1.8rem;
+            margin-top: 1rem;
+            color: var(--gold);
+            min-height: 2rem;
+        }
+
+        .result.win {
+            color: #4ade80;
+        }
+
+        .result.lose {
+            color: #f87171;
+        }
+
+        .result.jackpot {
+            color: #ffd700;
+            font-size: 2.5rem;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .info-box {
+            background: rgba(0,0,0,0.3);
+            padding: 1.5rem;
+            border: 1px solid var(--gold-dim);
+            border-radius: 5px;
+        }
+
+        .odds-table {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .odds-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem;
+            background: rgba(212, 175, 55, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="logo">← Cercle Privé</a>
+            <div class="balance">
+                Saldo: <span id="balance">10,000</span> kr
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 class="game-title">🏴‍☠️ PLINKO 🏴‍☠️</h1>
+
+        <div class="game-board">
+            <div class="plinko-board" id="plinkoBoard">
+                <div class="multipliers">
+                    <div class="multiplier jackpot">100x</div>
+                    <div class="multiplier high">25x</div>
+                    <div class="multiplier high">5x</div>
+                    <div class="multiplier mid">3x</div>
+                    <div class="multiplier mid">1x</div>
+                    <div class="multiplier low">0.5x</div>
+                    <div class="multiplier mid">1x</div>
+                    <div class="multiplier mid">3x</div>
+                    <div class="multiplier high">5x</div>
+                    <div class="multiplier high">25x</div>
+                    <div class="multiplier jackpot">100x</div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <div class="bet-section">
+                    <label style="color: var(--gold);">Insats:</label>
+                    <input type="number" class="bet-input" id="betAmount" value="100" min="10" step="10">
+                </div>
+                <button class="btn" id="dropBtn" onclick="dropBall()">SLÄPP BOLL</button>
+            </div>
+
+            <div class="result" id="result"></div>
+        </div>
+
+        <div class="info-box">
+            <h3 style="color: var(--gold); margin-bottom: 1rem;">Hur Spelar Man?</h3>
+            <p style="line-height: 1.6; margin-bottom: 1rem;">
+                Släpp bollen och se den studsa mellan pinnarna! Ju längre ut i kanterna den landar, desto högre vinst - men det är mycket svårare!
+            </p>
+            <div class="odds-table">
+                <div class="odds-row"><span>100x (Ytterst)</span><span style="color: #ffd700;">~1% chans</span></div>
+                <div class="odds-row"><span>25x</span><span style="color: #4ade80;">~5% chans</span></div>
+                <div class="odds-row"><span>5x</span><span style="color: #4ade80;">~12% chans</span></div>
+                <div class="odds-row"><span>3x</span><span style="color: var(--gold);">~20% chans</span></div>
+                <div class="odds-row"><span>1x</span><span style="color: var(--gold);">~30% chans</span></div>
+                <div class="odds-row"><span>0.5x (Mitten)</span><span style="color: #aaa;">~32% chans</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let balance = parseInt(localStorage.getItem('balance')) || 10000;
+        let isDropping = false;
+        
+        // Nya multiplikatorer: 100x längst ut, 0.5x i mitten
+        const multipliers = [100, 25, 5, 3, 1, 0.5, 1, 3, 5, 25, 100];
+        
+        // Viktade odds - bollen tenderar mot mitten
+        const slotWeights = [0.5, 2, 5, 10, 15, 32, 15, 10, 5, 2, 0.5]; // Summerar till ~97%
+
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type, freq = 400) {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            if (type === 'drop') {
+                oscillator.frequency.value = 600;
+                gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 0.2);
+            } else if (type === 'bounce') {
+                oscillator.frequency.value = freq;
+                gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.08);
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 0.08);
+            } else if (type === 'land') {
+                oscillator.frequency.value = 300;
+                oscillator.type = 'sine';
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 0.4);
+            } else if (type === 'jackpot') {
+                for (let i = 0; i < 6; i++) {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioContext.destination);
+                    osc.frequency.value = 800 + (i * 200);
+                    gain.gain.setValueAtTime(0.3, audioContext.currentTime + (i * 0.1));
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + (i * 0.1) + 0.5);
+                    osc.start(audioContext.currentTime + (i * 0.1));
+                    osc.stop(audioContext.currentTime + (i * 0.1) + 0.5);
+                }
+            }
+        }
+
+        document.getElementById('balance').textContent = balance.toLocaleString();
+
+        function updateBalance(amount) {
+            balance = amount;
+            document.getElementById('balance').textContent = balance.toLocaleString();
+            localStorage.setItem('balance', balance);
+        }
+
+        function createPegs() {
+            const board = document.getElementById('plinkoBoard');
+            const rows = 12; // Reduced from 14 so pegs stop before multipliers
+            const boardWidth = 600;
+            
+            for (let row = 0; row < rows; row++) {
+                const numPegs = row + 2;
+                const y = 30 + row * 45;
+                
+                for (let i = 0; i < numPegs; i++) {
+                    const peg = document.createElement('div');
+                    peg.className = 'peg';
+                    const spacing = boardWidth / (numPegs + 1);
+                    const x = spacing * (i + 1);
+                    peg.style.left = x + 'px';
+                    peg.style.top = y + 'px';
+                    board.appendChild(peg);
+                }
+            }
+        }
+
+        createPegs();
+
+        function getWeightedSlot() {
+            const totalWeight = slotWeights.reduce((a, b) => a + b, 0);
+            let random = Math.random() * totalWeight;
+            
+            for (let i = 0; i < slotWeights.length; i++) {
+                random -= slotWeights[i];
+                if (random <= 0) return i;
+            }
+            return 5; // Fallback till mitten
+        }
+
+        async function dropBall() {
+            if (isDropping) return;
+            
+            const bet = parseInt(document.getElementById('betAmount').value);
+            if (bet > balance || bet < 10) {
+                alert('Ogiltig insats!');
+                return;
+            }
+
+            isDropping = true;
+            document.getElementById('dropBtn').disabled = true;
+            document.getElementById('result').textContent = '';
+            
+            updateBalance(balance - bet);
+            playSound('drop');
+
+            const board = document.getElementById('plinkoBoard');
+            const ball = document.createElement('div');
+            ball.className = 'ball';
+            ball.style.left = '289px';
+            ball.style.top = '10px';
+            board.appendChild(ball);
+
+            let x = 289;
+            let y = 10;
+            let targetSlot = getWeightedSlot();
+
+            for (let row = 0; row < 12; row++) {
+                await new Promise(resolve => setTimeout(resolve, 180));
+                
+                // Rörelse mot målet med lite slump
+                const targetX = (targetSlot * 54) + 27;
+                const randomness = (Math.random() - 0.5) * 30;
+                const moveTowards = (targetX - x) * 0.15;
+                x += moveTowards + randomness;
+                y += 45;
+                
+                x = Math.max(20, Math.min(580, x));
+                
+                ball.style.left = x + 'px';
+                ball.style.top = y + 'px';
+                
+                playSound('bounce', 300 + (row * 20));
+            }
+
+            await new Promise(resolve => setTimeout(resolve, 300));
+            
+            const slotWidth = 600 / 11;
+            let finalSlot = Math.floor(x / slotWidth);
+            finalSlot = Math.max(0, Math.min(10, finalSlot));
+            
+            playSound('land');
+            
+            const multiplier = multipliers[finalSlot];
+            const winAmount = Math.floor(bet * multiplier);
+            
+            updateBalance(balance + winAmount);
+            
+            const resultEl = document.getElementById('result');
+            if (multiplier >= 100) {
+                resultEl.textContent = `🎰💎 JACKPOT ${multiplier}x! 💎🎰 Vann ${winAmount.toLocaleString()} kr!`;
+                resultEl.className = 'result jackpot';
+                playSound('jackpot');
+            } else if (multiplier >= 5) {
+                resultEl.textContent = `🎉 ${multiplier}x! Vann ${winAmount.toLocaleString()} kr!`;
+                resultEl.className = 'result win';
+            } else if (multiplier >= 1) {
+                resultEl.textContent = `${multiplier}x - Vann ${winAmount.toLocaleString()} kr`;
+                resultEl.className = 'result';
+            } else {
+                resultEl.textContent = `${multiplier}x - Förlorade ${(bet - winAmount).toLocaleString()} kr`;
+                resultEl.className = 'result lose';
+            }
+
+            setTimeout(() => {
+                ball.remove();
+                isDropping = false;
+                document.getElementById('dropBtn').disabled = false;
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

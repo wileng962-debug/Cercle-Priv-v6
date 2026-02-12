@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slots - Cercle Privé</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Cormorant+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --midnight: #0a1128;
+            --gold: #d4af37;
+            --black: #000000;
+            --gold-dim: #8a7425;
+            --white: #f5f5f5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background: var(--midnight);
+            color: var(--white);
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(212, 175, 55, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(212, 175, 55, 0.02) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--gold-dim);
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 10;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--gold);
+            letter-spacing: 2px;
+            text-decoration: none;
+        }
+
+        .balance {
+            font-size: 1.3rem;
+            color: var(--gold);
+        }
+
+        .balance-amount {
+            font-weight: 600;
+            font-size: 1.6rem;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+
+        .game-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            text-align: center;
+            color: var(--gold);
+            margin-bottom: 2rem;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .slot-machine {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(10, 17, 40, 0.9));
+            border: 3px solid var(--gold);
+            border-radius: 10px;
+            padding: 3rem 2rem;
+            box-shadow: 0 20px 60px rgba(212, 175, 55, 0.2);
+        }
+
+        .reels-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 5px;
+        }
+
+        .reel {
+            width: 120px;
+            height: 150px;
+            background: rgba(10, 17, 40, 0.8);
+            border: 2px solid var(--gold-dim);
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .reel.spinning {
+            animation: spin 0.1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-100%); }
+        }
+
+        .symbol {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .controls {
+            text-align: center;
+        }
+
+        .bet-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .bet-label {
+            font-size: 1.3rem;
+            color: var(--gold);
+        }
+
+        .bet-amount {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--gold);
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .btn {
+            padding: 0.8rem 2rem;
+            border: 2px solid var(--gold);
+            background: transparent;
+            color: var(--gold);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: var(--gold);
+            color: var(--midnight);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-spin {
+            background: var(--gold);
+            color: var(--midnight);
+            font-size: 1.5rem;
+            padding: 1.2rem 4rem;
+            margin-top: 1rem;
+            font-weight: 600;
+        }
+
+        .btn-spin:hover:not(:disabled) {
+            background: transparent;
+            color: var(--gold);
+            transform: scale(1.05);
+        }
+
+        .result-message {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 1.5rem;
+            min-height: 2rem;
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .result-message.win {
+            color: #4ade80;
+            text-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+            animation: pulse 0.5s ease;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .paytable {
+            margin-top: 3rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--gold-dim);
+            padding: 2rem;
+            border-radius: 5px;
+        }
+
+        .paytable h3 {
+            font-family: 'Playfair Display', serif;
+            color: var(--gold);
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .paytable-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .paytable-row:last-child {
+            border-bottom: none;
+        }
+
+        .paytable-symbols {
+            font-size: 1.5rem;
+        }
+
+        .paytable-payout {
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .reels-container {
+                gap: 0.5rem;
+                padding: 1rem;
+            }
+
+            .reel {
+                width: 90px;
+                height: 120px;
+                font-size: 3.5rem;
+            }
+
+            .game-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="logo">← Cercle Privé</a>
+            <div class="balance">
+                Saldo: <span class="balance-amount" id="balance">10,000</span> kr
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 class="game-title">🎰 SLOTS 🎰</h1>
+
+        <div class="slot-machine">
+            <div class="reels-container">
+                <div class="reel" id="reel1">
+                    <div class="symbol">🍒</div>
+                </div>
+                <div class="reel" id="reel2">
+                    <div class="symbol">🍋</div>
+                </div>
+                <div class="reel" id="reel3">
+                    <div class="symbol">🍊</div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <div class="bet-controls">
+                    <button class="btn" onclick="decreaseBet()">-</button>
+                    <div>
+                        <div class="bet-label">Insats</div>
+                        <div class="bet-amount" id="betAmount">100</div>
+                    </div>
+                    <button class="btn" onclick="increaseBet()">+</button>
+                </div>
+
+                <button class="btn btn-spin" id="spinBtn" onclick="spin()">SNURRA</button>
+
+                <div class="result-message" id="resultMessage"></div>
+            </div>
+        </div>
+
+        <div class="paytable">
+            <h3>Utbetalningstabell</h3>
+            <div class="paytable-row">
+                <div class="paytable-symbols">💎 💎 💎</div>
+                <div class="paytable-payout">50x insats</div>
+            </div>
+            <div class="paytable-row">
+                <div class="paytable-symbols">⭐ ⭐ ⭐</div>
+                <div class="paytable-payout">25x insats</div>
+            </div>
+            <div class="paytable-row">
+                <div class="paytable-symbols">🍀 🍀 🍀</div>
+                <div class="paytable-payout">15x insats</div>
+            </div>
+            <div class="paytable-row">
+                <div class="paytable-symbols">🍒 🍒 🍒</div>
+                <div class="paytable-payout">10x insats</div>
+            </div>
+            <div class="paytable-row">
+                <div class="paytable-symbols">🍋 🍋 🍋</div>
+                <div class="paytable-payout">8x insats</div>
+            </div>
+            <div class="paytable-row">
+                <div class="paytable-symbols">🍊 🍊 🍊</div>
+                <div class="paytable-payout">5x insats</div>
+            </div>
+            <div class="paytable-row">
+                <div class="paytable-symbols">Två lika</div>
+                <div class="paytable-payout">2x insats</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const symbols = ['🍒', '🍋', '🍊', '🍀', '⭐', '💎'];
+        let balance = parseInt(localStorage.getItem('balance')) || 10000;
+        let bet = 100;
+        let isSpinning = false;
+
+        // Audio context
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            if (type === 'spin') {
+                oscillator.frequency.value = 400;
+                oscillator.type = 'sine';
+                gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 0.1);
+            } else if (type === 'stop') {
+                oscillator.frequency.value = 600;
+                gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 0.15);
+            } else if (type === 'win') {
+                for (let i = 0; i < 3; i++) {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioContext.destination);
+                    osc.frequency.value = 800 + (i * 200);
+                    gain.gain.setValueAtTime(0.25, audioContext.currentTime + (i * 0.1));
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + (i * 0.1) + 0.3);
+                    osc.start(audioContext.currentTime + (i * 0.1));
+                    osc.stop(audioContext.currentTime + (i * 0.1) + 0.3);
+                }
+            } else if (type === 'jackpot') {
+                for (let i = 0; i < 6; i++) {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioContext.destination);
+                    osc.frequency.value = 1000 + (i * 150);
+                    gain.gain.setValueAtTime(0.3, audioContext.currentTime + (i * 0.08));
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + (i * 0.08) + 0.4);
+                    osc.start(audioContext.currentTime + (i * 0.08));
+                    osc.stop(audioContext.currentTime + (i * 0.08) + 0.4);
+                }
+            }
+        }
+
+        const payouts = {
+            '💎💎💎': 50,
+            '⭐⭐⭐': 25,
+            '🍀🍀🍀': 15,
+            '🍒🍒🍒': 10,
+            '🍋🍋🍋': 8,
+            '🍊🍊🍊': 5
+        };
+
+        function updateBalance(amount) {
+            balance = amount;
+            document.getElementById('balance').textContent = balance.toLocaleString();
+            localStorage.setItem('balance', balance);
+        }
+
+        updateBalance(balance);
+
+        function increaseBet() {
+            if (bet < balance && bet < 10000) {
+                bet += 100;
+                document.getElementById('betAmount').textContent = bet;
+            }
+        }
+
+        function decreaseBet() {
+            if (bet > 100) {
+                bet -= 100;
+                document.getElementById('betAmount').textContent = bet;
+            }
+        }
+
+        function getRandomSymbol() {
+            return symbols[Math.floor(Math.random() * symbols.length)];
+        }
+
+        async function spin() {
+            if (isSpinning) return;
+            
+            if (balance < bet) {
+                document.getElementById('resultMessage').textContent = 'Otillräckligt saldo!';
+                return;
+            }
+
+            isSpinning = true;
+            document.getElementById('spinBtn').disabled = true;
+            document.getElementById('resultMessage').textContent = '';
+
+            // Deduct bet
+            updateBalance(balance - bet);
+
+            const reels = [
+                document.getElementById('reel1'),
+                document.getElementById('reel2'),
+                document.getElementById('reel3')
+            ];
+
+            // Add spinning class
+            reels.forEach(reel => reel.classList.add('spinning'));
+
+            // Spin animation
+            const spinDuration = [1000, 1500, 2000];
+            const results = [];
+
+            for (let i = 0; i < 3; i++) {
+                await new Promise(resolve => {
+                    let count = 0;
+                    const interval = setInterval(() => {
+                        reels[i].querySelector('.symbol').textContent = getRandomSymbol();
+                        if (count % 2 === 0) playSound('spin');
+                        count++;
+                        if (count > 20) {
+                            clearInterval(interval);
+                            const finalSymbol = getRandomSymbol();
+                            reels[i].querySelector('.symbol').textContent = finalSymbol;
+                            results.push(finalSymbol);
+                            reels[i].classList.remove('spinning');
+                            playSound('stop');
+                            resolve();
+                        }
+                    }, 50);
+                });
+            }
+
+            // Check for win
+            checkWin(results);
+
+            isSpinning = false;
+            document.getElementById('spinBtn').disabled = false;
+        }
+
+        function checkWin(results) {
+            const resultMessage = document.getElementById('resultMessage');
+            const key = results.join('');
+
+            // Check for three of a kind
+            if (payouts[key]) {
+                const winAmount = bet * payouts[key];
+                updateBalance(balance + winAmount);
+                resultMessage.textContent = `🎉 JACKPOT! Vann ${winAmount.toLocaleString()} kr!`;
+                resultMessage.className = 'result-message win';
+                playSound('jackpot');
+                return;
+            }
+
+            // Check for two of a kind
+            if (results[0] === results[1] || results[1] === results[2] || results[0] === results[2]) {
+                const winAmount = bet * 2;
+                updateBalance(balance + winAmount);
+                resultMessage.textContent = `Vann ${winAmount.toLocaleString()} kr!`;
+                playSound('win');
+                resultMessage.className = 'result-message win';
+                playSound('jackpot');
+                return;
+            }
+
+            resultMessage.textContent = 'Ingen vinst denna gång';
+            resultMessage.className = 'result-message';
+        }
+    </script>
+</body>
+</html>
