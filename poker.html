@@ -346,6 +346,7 @@
             <button class="btn btn-success" id="callBtn" onclick="call()" disabled>CALL <span id="callAmount">0</span></button>
             <input type="number" class="bet-input" id="raiseAmount" value="200" min="100" step="50" disabled>
             <button class="btn" id="raiseBtn" onclick="raise()" disabled>RAISE</button>
+            <button class="btn" id="allinBtn" onclick="allIn()" disabled style="background: #ff6b6b; border-color: #ff6b6b;">ALL IN</button>
         </div>
 
         <div class="info-box">
@@ -551,7 +552,28 @@
             document.getElementById('callBtn').disabled = !enabled;
             document.getElementById('raiseBtn').disabled = !enabled;
             document.getElementById('raiseAmount').disabled = !enabled;
+            document.getElementById('allinBtn').disabled = !enabled;
             document.getElementById('callAmount').textContent = (currentBet - playerBet) + ' kr';
+        }
+
+        async function allIn() {
+            const allInAmount = playerChips;
+            const totalBet = playerBet + allInAmount;
+            
+            balance -= allInAmount;
+            playerChips = 0;
+            pot += allInAmount;
+            currentBet = Math.max(currentBet, totalBet);
+            playerBet = totalBet;
+            
+            updateBalance(balance);
+            updateDisplay();
+            
+            document.getElementById('gameStatus').textContent = '🔥 ALL IN! - ' + allInAmount.toLocaleString() + ' kr!';
+            enableControls(false);
+            
+            await aiTurn();
+            advancePhase();
         }
 
         function fold() {
@@ -612,23 +634,34 @@
             const handStrength = evaluateHand(aiHand, communityCards).rank;
             const random = Math.random();
             
-            if (handStrength >= 5 || (handStrength >= 2 && random > 0.5)) {
-                // AI calls or raises
+            // AI is MORE AGGRESSIVE - rarely folds
+            if (handStrength >= 3 || (handStrength >= 1 && random > 0.3)) {
+                // AI calls
                 const aiNeed = currentBet - aiBet;
                 aiChips -= aiNeed;
                 aiBet += aiNeed;
                 pot += aiNeed;
                 document.getElementById('gameStatus').textContent = 'AI kallar';
-            } else if (random > 0.7) {
-                // AI raises occasionally
-                const raiseAmt = 100;
-                aiChips -= (currentBet - aiBet + raiseAmt);
-                pot += (currentBet - aiBet + raiseAmt);
-                aiBet = currentBet + raiseAmt;
-                currentBet += raiseAmt;
-                document.getElementById('gameStatus').textContent = 'AI höjer med ' + raiseAmt + ' kr';
-            } else {
-                // AI folds
+            } else if (handStrength >= 1 && random > 0.5) {
+                // AI raises more often with pairs
+                const raiseAmt = 100 + Math.floor(Math.random() * 200);
+                const totalNeed = (currentBet - aiBet) + raiseAmt;
+                if (aiChips >= totalNeed) {
+                    aiChips -= totalNeed;
+                    pot += totalNeed;
+                    aiBet = currentBet + raiseAmt;
+                    currentBet += raiseAmt;
+                    document.getElementById('gameStatus').textContent = 'AI höjer med ' + raiseAmt + ' kr!';
+                } else {
+                    // Call if can't raise
+                    const aiNeed = currentBet - aiBet;
+                    aiChips -= aiNeed;
+                    aiBet += aiNeed;
+                    pot += aiNeed;
+                    document.getElementById('gameStatus').textContent = 'AI kallar';
+                }
+            } else if (random > 0.85) {
+                // AI only folds 15% of the time
                 playerChips += pot;
                 balance += pot;
                 updateBalance(balance);
@@ -636,6 +669,13 @@
                 playSound('win');
                 endHand();
                 return;
+            } else {
+                // Otherwise call
+                const aiNeed = currentBet - aiBet;
+                aiChips -= aiNeed;
+                aiBet += aiNeed;
+                pot += aiNeed;
+                document.getElementById('gameStatus').textContent = 'AI kallar';
             }
             
             updateDisplay();
