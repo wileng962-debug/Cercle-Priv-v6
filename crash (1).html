@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crash - Cercle Privé</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Cormorant+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --midnight: #0a1128;
+            --gold: #d4af37;
+            --gold-dim: #8a7425;
+            --white: #f5f5f5;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background: var(--midnight);
+            color: var(--white);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--gold-dim);
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--gold);
+            text-decoration: none;
+        }
+
+        .balance { font-size: 1.3rem; color: var(--gold); }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .game-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            text-align: center;
+            color: var(--gold);
+            margin-bottom: 2rem;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .game-area {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .game-view {
+            position: relative;
+            height: 600px;
+            background: linear-gradient(to bottom, 
+                #87CEEB 0%, 
+                #B0D8E8 30%, 
+                #D4A574 70%, 
+                #8B7355 100%
+            );
+            border: 3px solid var(--gold);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 40px rgba(212, 175, 55, 0.3);
+        }
+
+        /* Mountain background */
+        .mountains {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40%;
+            background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.1));
+        }
+
+        .mountain {
+            position: absolute;
+            bottom: 0;
+            width: 0;
+            height: 0;
+            border-style: solid;
+        }
+
+        .mountain-1 {
+            left: 5%;
+            border-width: 0 150px 250px 150px;
+            border-color: transparent transparent #5a4a3a transparent;
+        }
+
+        .mountain-2 {
+            left: 25%;
+            border-width: 0 120px 200px 120px;
+            border-color: transparent transparent #6b5a4a transparent;
+        }
+
+        .mountain-3 {
+            right: 15%;
+            border-width: 0 180px 280px 180px;
+            border-color: transparent transparent #4a3a2a transparent;
+        }
+
+        /* Trees */
+        .trees {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 30%;
+        }
+
+        .tree {
+            position: absolute;
+            bottom: 0;
+            width: 20px;
+            height: 80px;
+            background: #2d4a2d;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        }
+
+        .tree-1 { left: 10%; height: 70px; }
+        .tree-2 { left: 15%; height: 90px; }
+        .tree-3 { left: 20%; height: 75px; }
+        .tree-4 { right: 25%; height: 85px; }
+        .tree-5 { right: 20%; height: 70px; }
+        .tree-6 { right: 15%; height: 95px; }
+
+        /* Clouds */
+        .cloud {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 100px;
+            animation: float 60s linear infinite;
+        }
+
+        @keyframes float {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(100vw); }
+        }
+
+        .cloud-1 {
+            top: 10%;
+            width: 100px;
+            height: 40px;
+            animation-duration: 50s;
+        }
+
+        .cloud-2 {
+            top: 25%;
+            width: 120px;
+            height: 45px;
+            animation-duration: 70s;
+            animation-delay: -20s;
+        }
+
+        .cloud-3 {
+            top: 15%;
+            width: 90px;
+            height: 35px;
+            animation-duration: 60s;
+            animation-delay: -40s;
+        }
+
+        /* Airplane - Simple and clean */
+        .airplane {
+            position: absolute;
+            width: 80px;
+            height: 40px;
+            transition: all 0.1s ease;
+            filter: drop-shadow(2px 2px 8px rgba(0,0,0,0.3));
+        }
+
+        /* Main fuselage */
+        .plane-body {
+            position: absolute;
+            width: 60px;
+            height: 18px;
+            background: #f4a460;
+            border-radius: 20px 8px 8px 20px;
+            top: 11px;
+            left: 10px;
+            border: 2px solid #d4894a;
+        }
+
+        /* Wing */
+        .plane-wing {
+            position: absolute;
+            width: 45px;
+            height: 6px;
+            background: #f4a460;
+            border-radius: 3px;
+            top: 17px;
+            left: 28px;
+            border: 2px solid #d4894a;
+        }
+
+        /* Tail */
+        .plane-tail {
+            position: absolute;
+            width: 15px;
+            height: 12px;
+            background: #f4a460;
+            border-radius: 2px 2px 0 0;
+            top: 5px;
+            left: 12px;
+            border: 2px solid #d4894a;
+            border-bottom: none;
+        }
+
+        /* Window */
+        .plane-window {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            top: 16px;
+            left: 45px;
+            border: 1px solid #d4894a;
+        }
+
+        /* Propeller */
+        .plane-propeller {
+            position: absolute;
+            width: 16px;
+            height: 2px;
+            background: rgba(0, 0, 0, 0.3);
+            top: 19px;
+            left: 65px;
+            border-radius: 2px;
+            animation: spin 0.08s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Multiplier display */
+        .multiplier-display {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 6rem;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+            color: var(--gold);
+            text-shadow: 0 0 30px rgba(212, 175, 55, 0.8), 0 0 60px rgba(212, 175, 55, 0.4);
+            z-index: 10;
+        }
+
+        .crash-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4rem;
+            font-weight: 700;
+            color: #ff4444;
+            text-shadow: 0 0 20px rgba(255, 68, 68, 0.8);
+            display: none;
+            animation: pulse 1s ease-in-out;
+        }
+
+        .win-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            font-weight: 700;
+            color: #4ade80;
+            text-shadow: 0 0 20px rgba(74, 222, 128, 0.8);
+            display: none;
+            animation: pulse 1s ease-in-out;
+            z-index: 15;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        /* Side panel */
+        .side-panel {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(10, 17, 40, 0.9));
+            border: 3px solid var(--gold);
+            border-radius: 10px;
+            padding: 2rem;
+        }
+
+        .stats-box {
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid var(--gold-dim);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .stat-label {
+            color: var(--gold);
+            opacity: 0.8;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: var(--white);
+        }
+
+        .bet-input {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid var(--gold-dim);
+            color: var(--white);
+            font-size: 1.2rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1.2rem;
+            border: 2px solid var(--gold);
+            background: var(--gold);
+            color: var(--midnight);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: transparent;
+            color: var(--gold);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-cashout {
+            background: #4ade80;
+            border-color: #4ade80;
+            color: var(--midnight);
+        }
+
+        .btn-cashout:hover:not(:disabled) {
+            background: transparent;
+            color: #4ade80;
+            border-color: #4ade80;
+        }
+
+        .history {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .history-item {
+            padding: 0.5rem 1rem;
+            background: rgba(212, 175, 55, 0.2);
+            border: 1px solid var(--gold-dim);
+            border-radius: 5px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .history-item.crash { color: #ff4444; }
+        .history-item.win { color: #4ade80; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="logo">← Cercle Privé</a>
+            <div class="balance">Saldo: <span id="balance">10,000</span> kr</div>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 class="game-title">✈️ CRASH ✈️</h1>
+
+        <div class="game-area">
+            <div class="game-view">
+                <!-- Sky with clouds -->
+                <div class="cloud cloud-1"></div>
+                <div class="cloud cloud-2"></div>
+                <div class="cloud cloud-3"></div>
+
+                <!-- Mountains -->
+                <div class="mountains">
+                    <div class="mountain mountain-1"></div>
+                    <div class="mountain mountain-2"></div>
+                    <div class="mountain mountain-3"></div>
+                </div>
+
+                <!-- Trees -->
+                <div class="trees">
+                    <div class="tree tree-1"></div>
+                    <div class="tree tree-2"></div>
+                    <div class="tree tree-3"></div>
+                    <div class="tree tree-4"></div>
+                    <div class="tree tree-5"></div>
+                    <div class="tree tree-6"></div>
+                </div>
+
+                <!-- Airplane -->
+                <div class="airplane" id="airplane">
+                    <div class="plane-tail"></div>
+                    <div class="plane-body"></div>
+                    <div class="plane-wing"></div>
+                    <div class="plane-window"></div>
+                    <div class="plane-propeller"></div>
+                </div>
+
+                <!-- Multiplier -->
+                <div class="multiplier-display" id="multiplier">1.00x</div>
+                <div class="crash-message" id="crashMessage">💥 KRASCHADE!</div>
+                <div class="win-message" id="winMessage">🎉 VANN!</div>
+            </div>
+
+            <div class="side-panel">
+                <div class="stats-box">
+                    <div class="stat-row">
+                        <span class="stat-label">Multiplikator:</span>
+                        <span class="stat-value" id="currentMultiplier">1.00x</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Potentiell Vinst:</span>
+                        <span class="stat-value" id="potentialWin">0 kr</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Senaste Krasch:</span>
+                        <span class="stat-value" id="lastCrash">-</span>
+                    </div>
+                </div>
+
+                <input type="number" class="bet-input" id="betAmount" value="100" min="10" step="10" placeholder="Insats">
+                
+                <button class="btn" id="startBtn" onclick="startGame()">STARTA FLYGNING</button>
+                <button class="btn btn-cashout" id="cashoutBtn" onclick="cashout()" disabled>TA UT VINST</button>
+
+                <div class="history" id="history"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let balance = parseInt(localStorage.getItem('balance')) || 10000;
+        let isFlying = false;
+        let multiplier = 1.00;
+        let crashPoint = 0;
+        let currentBet = 0;
+        let updateInterval = null;
+        let history = [];
+
+        document.getElementById('balance').textContent = balance.toLocaleString();
+
+        function updateBalance(amt) {
+            balance = amt;
+            document.getElementById('balance').textContent = balance.toLocaleString();
+            localStorage.setItem('balance', balance);
+        }
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function sound(type) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            if (type === 'engine') {
+                osc.frequency.value = 100;
+                osc.type = 'sawtooth';
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 2);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 2);
+            } else if (type === 'cashout') {
+                for (let i = 0; i < 3; i++) {
+                    const o = audioCtx.createOscillator();
+                    const g = audioCtx.createGain();
+                    o.connect(g);
+                    g.connect(audioCtx.destination);
+                    o.frequency.value = 800 + (i * 200);
+                    g.gain.setValueAtTime(0.2, audioCtx.currentTime + (i * 0.08));
+                    g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + (i * 0.08) + 0.3);
+                    o.start(audioCtx.currentTime + (i * 0.08));
+                    o.stop(audioCtx.currentTime + (i * 0.08) + 0.3);
+                }
+            } else if (type === 'crash') {
+                osc.frequency.value = 50;
+                osc.type = 'sawtooth';
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.5);
+            }
+        }
+
+        function startGame() {
+            const bet = parseInt(document.getElementById('betAmount').value);
+            if (bet > balance || bet < 10) {
+                alert('Ogiltig insats!');
+                return;
+            }
+
+            currentBet = bet;
+            updateBalance(balance - bet);
+            isFlying = true;
+            multiplier = 1.00;
+            
+            // Random crash point (weighted toward lower values)
+            const rand = Math.random();
+            if (rand < 0.3) crashPoint = 1.01 + (Math.random() * 0.5); // 30% chance: 1.01-1.51x
+            else if (rand < 0.6) crashPoint = 1.5 + (Math.random() * 1.5); // 30% chance: 1.5-3x
+            else if (rand < 0.85) crashPoint = 3 + (Math.random() * 2); // 25% chance: 3-5x
+            else crashPoint = 5 + (Math.random() * 15); // 15% chance: 5-20x
+
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('cashoutBtn').disabled = false;
+            document.getElementById('crashMessage').style.display = 'none';
+
+            sound('engine');
+            
+            const airplane = document.getElementById('airplane');
+            let startTime = Date.now();
+
+            updateInterval = setInterval(() => {
+                const elapsed = (Date.now() - startTime) / 1000;
+                multiplier = 1 + (elapsed * 0.2); // Slower: 0.2x per second (was 0.5x)
+                
+                if (multiplier >= crashPoint) {
+                    crash();
+                    return;
+                }
+
+                // Update display
+                document.getElementById('multiplier').textContent = multiplier.toFixed(2) + 'x';
+                document.getElementById('currentMultiplier').textContent = multiplier.toFixed(2) + 'x';
+                document.getElementById('potentialWin').textContent = Math.floor(currentBet * multiplier).toLocaleString() + ' kr';
+
+                // Move airplane
+                const progress = Math.min(multiplier / 10, 1);
+                const x = 10 + (progress * 70); // 10% to 80% of width
+                const y = 80 - (progress * 60); // Bottom to top
+                airplane.style.left = x + '%';
+                airplane.style.top = y + '%';
+                airplane.style.transform = `rotate(${-20 + (progress * 15)}deg)`;
+
+            }, 100);
+        }
+
+        function cashout() {
+            if (!isFlying) return;
+
+            clearInterval(updateInterval);
+            isFlying = false;
+
+            const winnings = Math.floor(currentBet * multiplier);
+            updateBalance(balance + winnings);
+
+            sound('cashout');
+
+            addHistory(multiplier.toFixed(2) + 'x', 'win');
+
+            // Show win message on screen instead of alert
+            document.getElementById('multiplier').style.display = 'none';
+            const winMsg = document.getElementById('winMessage');
+            winMsg.textContent = '🎉 Vann ' + winnings.toLocaleString() + ' kr på ' + multiplier.toFixed(2) + 'x!';
+            winMsg.style.display = 'block';
+
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('cashoutBtn').disabled = true;
+
+            setTimeout(() => {
+                winMsg.style.display = 'none';
+                document.getElementById('multiplier').style.display = 'block';
+                document.getElementById('multiplier').textContent = '1.00x';
+                resetPlane();
+            }, 3000);
+        }
+
+        function crash() {
+            clearInterval(updateInterval);
+            isFlying = false;
+
+            sound('crash');
+
+            document.getElementById('multiplier').style.display = 'none';
+            document.getElementById('crashMessage').style.display = 'block';
+            document.getElementById('lastCrash').textContent = crashPoint.toFixed(2) + 'x';
+
+            addHistory(crashPoint.toFixed(2) + 'x', 'crash');
+
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('cashoutBtn').disabled = true;
+
+            setTimeout(() => {
+                document.getElementById('crashMessage').style.display = 'none';
+                document.getElementById('multiplier').style.display = 'block';
+                document.getElementById('multiplier').textContent = '1.00x';
+                resetPlane();
+            }, 2000);
+        }
+
+        function resetPlane() {
+            const airplane = document.getElementById('airplane');
+            airplane.style.left = '10%';
+            airplane.style.top = '80%';
+            airplane.style.transform = 'rotate(-20deg)';
+            multiplier = 1.00;
+            document.getElementById('currentMultiplier').textContent = '1.00x';
+            document.getElementById('potentialWin').textContent = '0 kr';
+        }
+
+        function addHistory(value, type) {
+            history.unshift({ value, type });
+            if (history.length > 10) history.pop();
+
+            const historyDiv = document.getElementById('history');
+            historyDiv.innerHTML = '';
+            history.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'history-item ' + item.type;
+                div.textContent = item.value;
+                historyDiv.appendChild(div);
+            });
+        }
+
+        resetPlane();
+    </script>
+</body>
+</html>
