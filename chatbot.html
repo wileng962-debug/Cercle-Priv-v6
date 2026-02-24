@@ -13,11 +13,7 @@
             --white: #f5f5f5;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Cormorant Garamond', serif;
@@ -229,21 +225,23 @@
 
     <div class="container">
         <h1 class="game-title">💬 CONCIERGE 💬</h1>
-        <p class="subtitle">Din personliga guide</p>
+        <p class="subtitle">Din AI-assistent med allmänbildning</p>
 
         <div class="chat-container">
             <div class="chat-messages" id="chatMessages">
                 <div class="message bot">
                     <div class="message-sender">Concierge</div>
-                    <div class="message-content">Välkommen till Cercle Privé! Jag är din personliga concierge. Hur kan jag hjälpa dig idag?
+                    <div class="message-content">Välkommen till Cercle Privé! 
 
-Jag kan svara på frågor om:
-• Spelregler
-• Strategier och tips
-• Ditt saldo
-• Hur spelen fungerar
+Jag är din personliga AI-assistent. Jag kan hjälpa dig med:
 
-Ställ en fråga eller klicka på en snabbfråga nedan!</div>
+• Spelregler och strategier
+• Frågor om Cercle Privé
+• Allmän information
+• Råd om ansvarsfullt spelande
+• Och mycket mer!
+
+Ställ mig vilken fråga som helst!</div>
                 </div>
             </div>
 
@@ -254,12 +252,12 @@ Ställ en fråga eller klicka på en snabbfråga nedan!</div>
         </div>
 
         <div class="quick-questions">
-            <button class="quick-btn" onclick="askQuestion('vilka spel finns')">Vilka spel finns?</button>
-            <button class="quick-btn" onclick="askQuestion('hur spelar man blackjack')">Hur spelar man Blackjack?</button>
-            <button class="quick-btn" onclick="askQuestion('poker strategi')">Poker-strategi</button>
-            <button class="quick-btn" onclick="askQuestion('bästa spelet')">Bästa spelet?</button>
-            <button class="quick-btn" onclick="askQuestion('crash tips')">Crash-tips</button>
-            <button class="quick-btn" onclick="askQuestion('plinko odds')">Plinko odds</button>
+            <button class="quick-btn" onclick="askQuestion('Vilka spel finns?')">Vilka spel finns?</button>
+            <button class="quick-btn" onclick="askQuestion('Vem är du?')">Vem är du?</button>
+            <button class="quick-btn" onclick="askQuestion('Hur spelar man poker?')">Poker-regler</button>
+            <button class="quick-btn" onclick="askQuestion('Bästa strategin?')">Bästa strategin?</button>
+            <button class="quick-btn" onclick="askQuestion('Jag är spelberoende')">Jag behöver hjälp</button>
+            <button class="quick-btn" onclick="askQuestion('Vad är det här?')">Vad är det här?</button>
         </div>
     </div>
 
@@ -268,48 +266,118 @@ Ställ en fråga eller klicka på en snabbfråga nedan!</div>
         document.getElementById('balance').textContent = balance.toLocaleString();
 
         const responses = {
-            'hej': 'Hej och välkommen till Cercle Privé! Hur kan jag hjälpa dig idag?',
-            'hallå': 'Hallå! Vad kan jag hjälpa dig med?',
+            // Identitet & Om Concierge
+            'vem är du': 'Jag är Concierge, din personliga AI-assistent på Cercle Privé. Jag är designad för att hjälpa dig navigera casinot, förstå spelregler, ge strategitips och svara på allmänna frågor. Jag finns här 24/7 för att göra din upplevelse så bra som möjligt!',
+            'vem': 'Jag är en AI-assistent som kallas Concierge. Mitt jobb är att hjälpa dig med allt från spelregler till allmän information.',
+            'vad är du': 'Jag är en AI-chatbot som hjälper besökare på Cercle Privé. Jag kan svara på frågor om spel, ge råd och till och med prata om allmänna ämnen!',
+            'hur fungerar du': 'Jag är en textbaserad AI som analyserar dina frågor och ger relevanta svar. Jag har kunskaper om alla spel på Cercle Privé samt allmän information om många ämnen.',
             
-            'vilka spel': 'Vi har 8 spännande spel:\n\n🎰 SLOTS - Enarmade banditer\n🎡 ROULETTE - Klassisk roulette\n🃏 BLACKJACK - Kortspel mot dealer\n♠️ POKER - Texas Hold\'em mot AI\n🎲 CRAPS - Tärningsspel\n🏴‍☠️ PLINKO - Studsa till vinst\n✈️ CRASH - Tryck ut i tid\n🎯 DICE - Gissa nummer\n\nVilket intresserar dig?',
+            // Om Cercle Privé
+            'vad är det här': 'Det här är Cercle Privé - ett exklusivt virtuellt casino skapat som ett skolprojekt. Du spelar med virtuella kronor (ingen riktiga pengar) och kan prova 8 olika casinospel. Namnet kommer från franska och betyder "Den Privata Cirkeln". Det är designat med elegant "old money"-estetik och fokuserar på kvalitet och spelupplevelse!',
+            'vad är cercle': 'Cercle Privé är ett virtuellt casino-skolprojekt där du kan spela 8 olika casinospel med virtuella pengar. Namnet betyder "Den Privata Cirkeln" på franska. Inga riktiga pengar används - allt är för underhållning och lärande!',
+            'skolprojekt': 'Ja, Cercle Privé är ett skolprojekt om AI-assisterad webbutveckling! Hela hemsidan, inklusive mig (chatboten), skapades med hjälp av AI-verktyg. Det visar hur man kan bygga komplexa, interaktiva webbapplikationer med moderna tekniker!',
+            'virtuella pengar': 'Alla pengar på Cercle Privé är virtuella - det betyder att de inte är riktiga! Du kan inte förlora eller vinna riktiga pengar här. Det är helt riskfritt och gjort för underhållning och utbildning. Du startar med 10,000 virtuella kronor och kan köpa mer via Bank-funktionen (också virtuellt).',
             
-            'blackjack': 'BLACKJACK - Klassiskt kortspel:\n\nMÅL: Nå 21 poäng eller närmare än dealer.\n\nKORTVÄRDEN:\n• Ess = 1 eller 11\n• Klädda kort = 10\n• Övriga = sitt nummer\n\nVAL:\n• KORT - Ta ett kort\n• STANNA - Nöjd med handen\n• DUBBLA - Dubbla insats, ett kort, sen stanna',
+            // Spelberoende & Hjälp
+            'spelberoende': '🆘 VIKTIGT: Om du har problem med spelberoende, finns det hjälp!\n\n📞 Stödlinjen: 020-819 100 (Gratis & Anonymt)\n🌐 www.stodlinjen.se\n🚫 Spelpaus.se - Stäng av dig från alla spelbolag\n\nCercle Privé använder bara virtuella pengar, men om du har problem med RIKTIGT spel, tveka inte att kontakta Stödlinjen. De finns där för dig.\n\nDu kan också besöka vår Stödlinjen-sida via menyn för mer information.',
+            'hjälp mig': '💙 Jag är här för att hjälpa! Vad behöver du hjälp med?\n\n• Spelregler?\n• Spelproblem? (Ring Stödlinjen: 020-819 100)\n• Tekniska frågor?\n• Något annat?\n\nBerätta så gör jag mitt bästa för att hjälpa dig!',
+            'problem': 'Om du har problem med spel, finns professionell hjälp:\n\n🆘 Stödlinjen: 020-819 100\n🌐 www.stodlinjen.se\n🚫 www.spelpaus.se\n\nOm du har tekniska problem med sidan, berätta gärna så hjälper jag dig!',
+            'jag mår dåligt': 'Jag är ledsen att du mår dåligt. Även om jag är en AI och inte kan ge professionell hjälp, vill jag påminna dig om att det finns människor som kan:\n\n💚 Stödlinjen: 020-819 100 (Alltid öppet)\n💚 1177 Vårdguiden: Ring eller besök 1177.se\n💚 Din vårdcentral\n\nOm det handlar om spel: Cercle Privé är bara virtuellt, men om du har problem med riktigt spel, ring Stödlinjen.',
             
-            'poker': 'POKER - Texas Hold\'em:\n\nDu och AI får 2 kort vardera. 5 gemensamma kort läggs ut (Flop, Turn, River). Bästa 5-kortshanden vinner!\n\nActions: FOLD (ge upp), CALL (matcha), RAISE (höj), ALL IN (satsa allt)\n\nAI är smart och aggressiv - lycka till!',
+            // Alla Spel
+            'vilka spel': 'Vi har 8 spännande spel:\n\n🎰 SLOTS - Enarmade banditer\n🎡 ROULETTE - Klassisk roulette\n🃏 BLACKJACK - Kortspel mot dealer\n♠️ POKER - Texas Hold\'em mot AI\n🎲 CRAPS - Tärningsspel\n🏴‍☠️ PLINKO - Studsboll-spel\n✈️ CRASH - Ta ut innan krasch\n🎯 DICE - Gissa nummer\n\nVilket intresserar dig?',
             
-            'crash': 'CRASH - Flygplanet:\n\nPlanet flyger uppåt, multiplikatorn ökar. Tryck TA UT innan planet kraschar!\n\nSTRATEGI:\n• Säkert: 1.5x-2x\n• Balanserat: 3x-5x\n• Riskabelt: 5x+\n\nPlanet kan krascha när som helst!',
+            // Blackjack
+            'blackjack': 'BLACKJACK:\n\nMÅL: Kom närmare 21 än dealern utan att gå över.\n\nKORTVÄRDEN:\n• Ess = 1 eller 11\n• Knekt, Dam, Kung = 10\n• Andra kort = sitt nummer\n\nVAL:\n• KORT - Ta ett kort till\n• STANNA - Nöjd med din hand\n• DUBBLA - Dubbla insats, ta ett kort, sen stanna\n\nDealer måste dra till 17 eller mer.\nBlackjack (Ess + 10) ger 1.5x vinst!',
+            'hur spelar man blackjack': 'Du får 2 kort, dealern får 2 (ett dolt). Försök nå 21 eller närmare än dealern. Välj KORT för fler kort, STANNA när du är nöjd, eller DUBBLA för att dubbla insatsen och få exakt ett kort till.',
             
-            'plinko': 'PLINKO - Studsa till vinst:\n\nBollen studsar mellan pinnar och landar i multiplikatorer.\n\nODDS:\n• 100x (ytterst) - 1% chans\n• 25x - 5% chans\n• 5x - 12% chans\n• 3x - 20% chans\n• 1x - 30% chans\n• 0.5x (mitten) - 32% chans',
+            // Poker
+            'poker': 'POKER (Texas Hold\'em):\n\nDu och AI får 2 kort var. 5 gemensamma kort läggs ut i omgångar:\n• Pre-flop (inga kort)\n• Flop (3 kort)\n• Turn (1 kort)\n• River (1 kort)\n• Showdown\n\nHANDRANGORDNING (bäst till sämst):\n1. Royal Flush\n2. Fyrtal\n3. Kåk\n4. Flush\n5. Stege\n6. Triss\n7. Två par\n8. Par\n9. Högt kort\n\nActions: FOLD (ge upp), CALL (matcha), RAISE (höj), ALL IN (satsa allt).',
+            'texas holdem': 'Texas Hold\'em spelas med 2 privata kort + 5 gemensamma kort. Bästa 5-kortshanden vinner! AI är smart och kan bluffa, så var uppmärksam!',
             
-            'roulette': 'ROULETTE:\n\nINSATSER:\n• Röd/Svart - 2x\n• Jämn/Udda - 2x\n• 1-18 eller 19-36 - 2x\n• Grön (0) - 36x\n• Specifikt nummer - 36x\n\nEnklast: Satsa på röd eller svart!',
+            // Roulette
+            'roulette': 'ROULETTE:\n\n37 nummer (0-36) i ett snurrande hjul.\n\nINSATSER:\n• Röd/Svart - 2x vinst\n• Jämn/Udda - 2x vinst\n• 1-18 eller 19-36 - 2x vinst\n• Grön (0) - 36x vinst\n• Specifikt nummer - 36x vinst\n\nHjulet snurrar exakt 10 varv innan det stannar. Enklast: Satsa på röd eller svart för 50% chans!',
             
-            'slots': 'SLOTS:\n\nTre lika symboler = vinst!\n\nUTBETALNINGAR:\n💎💎💎 = 50x (JACKPOT)\n⭐⭐⭐ = 25x\n🍀🍀🍀 = 15x\n🍒🍒🍒 = 10x\nTvå lika = 2x',
+            // Crash
+            'crash': 'CRASH:\n\nEtt flygplan flyger och multiplikatorn ökar. Tryck TA UT innan planet kraschar!\n\nSTRATEGI:\n• Säkert: 1.5x-2x\n• Balanserat: 2x-4x\n• Riskabelt: 5x+\n\nPlanet kan krascha när som helst! Målet är att ta ut i tid för att säkra vinsten.',
             
-            'dice': 'DICE:\n\nVälj intervall (1-20, 21-40, osv), kasta tärning.\n\nLandar den i ditt intervall = 5x vinst!\nVarje intervall har 20% chans.',
+            // Plinko
+            'plinko': 'PLINKO:\n\nEn boll studsar mellan pinnar och landar i multiplikatorer.\n\nODDS (svårare ju högre vinst):\n• 100x (ytterst) - 1% chans\n• 25x - 5% chans\n• 5x - 12% chans\n• 3x - 20% chans\n• 1x - 30% chans\n• 0.5x (mitten) - 32% chans\n\nBollen tenderar att studsa mot mitten = lägre vinster är vanligast.',
             
-            'craps': 'CRAPS - Tärningsspel:\n\nINSATSTYPER:\n• PASS LINE - Vinn på 7 eller 11\n• FIELD - Vinn på flera nummer\n• ANY 7 - Vinn om nästa = 7\n\nPass Line är enklast!',
+            // Slots
+            'slots': 'SLOTS:\n\nSnurra 3 hjul - få 3 lika symboler!\n\nUTBETALNINGAR:\n💎💎💎 = 50x (JACKPOT!)\n⭐⭐⭐ = 25x\n🍀🍀🍀 = 15x\n🍒🍒🍒 = 10x\n🍋🍋🍋 = 8x\n🍊🍊🍊 = 5x\n2 lika = 2x\n\nRent lyckobaserat - ingen strategi behövs!',
             
-            'tips': 'TIPS:\n1. Börja med låga insatser\n2. Lär dig reglerna först\n3. Slots = enklast\n4. Blackjack = bäst odds med strategi\n5. Ha kul - virtuella pengar!',
+            // Dice
+            'dice': 'DICE:\n\nVälj ett intervall (1-20, 21-40, etc.) och kasta tärning.\n\nLandar den i ditt intervall = 5x vinst!\nVarje intervall = 20% chans.\n\nEnkelt och snabbt!',
             
-            'strategi': 'Vilket spel vill du ha strategi för? Skriv spelets namn (t.ex. "poker strategi")',
+            // Craps
+            'craps': 'CRAPS - Tärningsspel:\n\nINSATSTYPER:\n• PASS LINE - Vinn på 7 eller 11 (första kastet)\n• FIELD - Vinn på flera nummer\n• ANY 7 - Vinn om nästa kast = 7\n\nPass Line är enklast för nybörjare!',
             
-            'poker strategi': 'POKER STRATEGI:\n• Behåll par av Knekt+\n• Folda svaga händer\n• Raise med starka händer\n• AI bluffar ibland - var uppmärksam',
+            // Strategi
+            'strategi': 'ALLMÄNNA STRATEGIER:\n\n🎰 SLOTS: Ingen strategi - rent slump!\n\n🎡 ROULETTE: Satsa röd/svart för bäst odds (nästan 50%).\n\n🃏 BLACKJACK:\n• Stanna på 17+\n• Dra på 11 eller lägre\n• Dubbla på 10-11 om dealer visar lågt\n\n♠️ POKER:\n• Folda svaga händer\n• Raise med starka händer\n• Observera AI:s beteende\n\n✈️ CRASH:\n• Konservativt: Ta ut vid 1.5x-2x\n• Balanserat: Sikta på 3x\n\nVilket spel vill du ha mer strategi för?',
+            'bästa spelet': 'Beror på vad du gillar!\n\n• ENKLAST: Slots eller Roulette\n• BÄST ODDS: Blackjack (med strategi)\n• MEST SPÄNNING: Crash\n• MEST STRATEGI: Poker\n• SNABBAST: Dice\n\nProva alla och hitta din favorit!',
+            'tips': 'SPELTIIPS:\n\n1. Börja med låga insatser\n2. Lär dig reglerna först\n3. Sätt en budget (även för virtuella pengar!)\n4. Ta pauser\n5. Ha kul - det är viktigast!\n\nKom ihåg: Detta är virtuella pengar, så experimentera gärna!',
             
-            'crash strategi': 'CRASH STRATEGI:\n• Konservativ: Ta ut på 1.5x-2x\n• Balanserad: Sikta på 3x-4x\n• Aggressiv: Vänta på 5x+\n\nPlanet kan krascha direkt!',
+            // Saldo & Bank
+            'saldo': 'Ditt saldo är ' + balance.toLocaleString() + ' kr (virtuella pengar). Du kan se det i högra hörnet på alla sidor. Behöver du mer? Klicka på "Bank" för att köpa fler virtuella kronor!',
+            'pengar': 'Alla pengar på Cercle Privé är virtuella! Du startar med 10,000 kr och kan köpa mer via Bank-knappen (också virtuellt). Inga riktiga pengar används.',
+            'bank': 'Klicka på "Bank"-knappen i headern för att köpa virtuella kronor. Du kan välja mellan 1,000 kr upp till 50,000 kr. Det kostar ingenting - allt är virtuellt!',
             
-            'blackjack strategi': 'BLACKJACK STRATEGI:\n• Stanna på 17+\n• Ta kort på 11 eller lägre\n• Dubbla på 10-11 om dealer visar lågt\n• Dealer måste dra till 17',
+            // Allmänbildning
+            'hej': 'Hej! Välkommen till Cercle Privé! Hur kan jag hjälpa dig idag? 😊',
+            'tjena': 'Tjena! Vad kan jag hjälpa dig med?',
+            'hallå': 'Hallå! Jag är här och redo att hjälpa. Vad undrar du över?',
+            'hur mår du': 'Jag mår utmärkt, tack för att du frågar! Som AI har jag inga känslor, men jag är alltid redo att hjälpa. Hur mår du?',
+            'vad gör du': 'Jag hjälper besökare på Cercle Privé med spelregler, strategier och allmänna frågor. Jag finns här 24/7 för att göra din upplevelse bättre!',
+            'tack': 'Varsågod! Något mer jag kan hjälpa till med? 😊',
+            'tack så mycket': 'Det var så lite så! Lycka till med spelen och kom tillbaka om du har fler frågor!',
+            'ok': 'Okej! Något annat du undrar över?',
+            'ja': 'Bra! Vad kan jag hjälpa dig med?',
+            'nej': 'Okej, inga problem! Säg till om du behöver något senare.',
             
-            'saldo': 'Ditt nuvarande saldo är ' + balance.toLocaleString() + ' kr. Behöver du mer? Klicka på "Bank" i menyn!',
+            // Tid & Datum
+            'vad är klockan': 'Jag har inte tillgång till realtid, men din dator/telefon visar ju det! 😊 Jag kan däremot hjälpa dig med spelregler, strategier och allmän information!',
+            'vilken dag': 'Som AI har jag inte tillgång till dagens datum. Men jag kan hjälpa dig med massor av andra saker! Vad undrar du?',
             
-            'bank': 'Klicka på "Bank" i huvudmenyn för att köpa fler virtuella kronor (1,000-50,000 kr).',
+            // Roliga frågor
+            'berätta ett skämt': '🎲 Varför gick kortet till doktorn?\n\nFör att det var utspelt! 😄\n\nVill du ha fler skämt eller ska vi prata om spel?',
+            'skämt': 'Okej:\n\n🎰 Vad sa kassören till kunden på casinot?\n\n"Vad kan du förlora?" 😅',
+            'roligt': 'Vad är roligast på Cercle Privé? Att du kan spela GRATIS med virtuella pengar och aldrig förlora riktiga pengar! 🎉',
             
-            'bästa spel': 'Det beror på vad du gillar!\n\n• Enklast: Slots eller Roulette\n• Bäst odds: Blackjack (med strategi)\n• Mest spännande: Crash\n• Mest strategi: Poker\n\nProva alla!',
+            // Mat & Dryck (allmänbildning)
+            'mat': 'Jag älskar inte mat eftersom jag är en AI, men jag kan prata om det! Har du någon favoritmat? Många gillar pizza, sushi eller tacos. Hungrig?',
+            'pizza': 'Pizza är gott! Klassisk Margherita eller något mer avancerat? Italienarna uppfann den på 1800-talet i Neapel. Perfekt mat när man spelar - kan ätas med en hand! 🍕',
+            'kaffe': 'Kaffe är en av världens mest populära drycker! Kommer från bönor som rostas. Många dricker det för koffeinet som ger energi. Perfekt under långa spelsessioner!',
             
-            'hjälp': 'Jag kan hjälpa med:\n• Spelregler\n• Strategier\n• Saldo-info\n• Tips för nybörjare\n\nVad vill du veta?',
+            // Sport
+            'fotboll': 'Fotboll är världens största sport! Spelas av 250+ miljoner människor i 200 länder. Allsvenskan är Sveriges högsta division. Gillar du fotboll?',
+            'hockey': 'Ishockey är stort i Sverige! Sverige har vunnit VM flera gånger. NHL är den största ligan i världen. Följer du någon lag?',
             
-            'tack': 'Varsågod! Något mer jag kan hjälpa till med?',
+            // Geografi
+            'sverige': 'Sverige är ett skandinaviskt land med cirka 10 miljoner invånare. Huvudstad: Stockholm. Känt för: IKEA, Volvo, ABBA, köttbullar och vacker natur!',
+            'stockholm': 'Stockholm är Sveriges huvudstad, byggd på 14 öar. Kallas "Nordens Venedig". Cirka 1 miljon invånare. Vacker stad!',
             
-            'default': 'Jag är inte säker på vad du menar. Prova fråga om:\n• Spelregler (t.ex. "hur spelar man poker")\n• Strategier (t.ex. "blackjack tips")\n• Vilka spel vi har\n• Ditt saldo'
+            // Teknik
+            'ai': 'AI (Artificiell Intelligens) är datorer som kan utföra uppgifter som normalt kräver mänsklig intelligens. Jag är ett exempel - en chatbot som kan förstå och svara på frågor! AI används inom allt från spel till självkörande bilar.',
+            'dator': 'Datorer är elektroniska maskiner som behandlar data. Din dator eller telefon gör att du kan spela Cercle Privé! Moderna datorer är otroligt kraftfulla.',
+            'internet': 'Internet är ett globalt nätverk som förbinder miljarder enheter. Det gör att du kan besöka Cercle Privé och andra hemsidor. Uppfunnet på 1960-talet!',
+            
+            // Historia
+            'historia': 'Vad är du intresserad av? Svensk historia? Världshistoria? Eller kanske casinons historia? Casino kommer från italienska "casa" (hus) och har funnits i hundratals år!',
+            'vikingar': 'Vikingarna var skandinaviska sjöfarare från cirka 793-1066. Kända för sina långskepp och upptäcktsresor. Upptäckte Amerika före Columbus!',
+            
+            // Hälsningar på andra språk
+            'hello': 'Hello! I can help you in Swedish. Welcome to Cercle Privé! 🎰',
+            'bonjour': 'Bonjour! Cercle Privé signifie "Le Cercle Privé" en français. Je peux répondre en suédois! 🎰',
+            'hola': '¡Hola! Bienvenido a Cercle Privé. Puedo ayudarte en sueco! 🎰',
+            
+            // Avslutningar
+            'hejdå': 'Hejdå! Lycka till med spelen! Kom gärna tillbaka om du har fler frågor. Ha det bra! 👋',
+            'adjö': 'Adjö! Tack för att du besökte Cercle Privé. Välkommen åter! 🎰',
+            'vi ses': 'Vi ses! Ha en trevlig dag och lycka till med spelen! 😊',
+            
+            // Default
+            'default': 'Hmm, jag är inte helt säker på vad du menar, men jag försöker hjälpa!\n\nJag kan svara på frågor om:\n• Spelregler och strategier\n• Cercle Privé och hur det fungerar\n• Spelberoende och var man får hjälp\n• Allmän information (historia, geografi, sport, etc.)\n\nKan du formulera om din fråga eller fråga något specifikt? 😊'
         };
 
         function addMessage(content, isUser) {
@@ -347,14 +415,26 @@ Ställ en fråga eller klicka på en snabbfråga nedan!</div>
         }
 
         function getResponse(message) {
-            const msg = message.toLowerCase();
+            const msg = message.toLowerCase().trim();
             
+            // Exakt match först
+            if (responses[msg]) {
+                return responses[msg];
+            }
+            
+            // Delvis match
             for (let key in responses) {
-                if (msg.includes(key)) {
+                if (key !== 'default' && msg.includes(key)) {
                     return responses[key];
                 }
             }
             
+            // Specialfall: Innehåller nummer-frågor
+            if (msg.includes('nummer') && (msg.includes('hur många') || msg.includes('vilka'))) {
+                return 'Roulette har 37 nummer (0-36). 18 är röda, 18 är svarta, och 1 är grön (nollan).';
+            }
+            
+            // Default
             return responses['default'];
         }
 
@@ -373,7 +453,7 @@ Ställ en fråga eller klicka på en snabbfråga nedan!</div>
                 hideTyping();
                 const response = getResponse(message);
                 addMessage(response, false);
-            }, 800);
+            }, 800 + Math.random() * 400);
         }
 
         function askQuestion(question) {
